@@ -17,22 +17,64 @@
   {% endwith %}
 </div>
 
-  <!-- 🌿 Navbar -->
-  <div class="navbar">
-    <div class="logo">🌱 AgriConnect</div>
-    <div class="nav-links">
+    <!-- 🌿 Navbar -->
+<header class="navbar">
+  <div class="nav-container">
+    <a href="{{ url_for('home') }}" class="logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-icon">
+      AgriConnect
+    </a>
+
+    <nav class="nav-links">
       <a href="{{ url_for('home') }}">Home</a>
       <a href="{{ url_for('products') }}">Products</a>
       <a href="{{ url_for('view_cart') }}">Cart</a>
       <a href="{{ url_for('view_wishlist') }}">Wishlist</a>
-      {% if session.get('user') %}
-        <a href="{{ url_for('logout') }}">Logout</a>
+
+      {% if session.get('admin') %}
+        <!-- ✅ Admin is logged in -->
+        <div class="nav-user-wrapper">
+          <button id="navUserBtn" class="nav-user" aria-expanded="false">
+            <span class="nav-avatar">A</span>
+            <span class="nav-username">Admin</span>
+            <svg class="nav-caret" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M5 7L10 12L15 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div id="navUserDropdown" class="nav-user-dropdown" aria-hidden="true">
+            <a href="{{ url_for('admin_dashboard') }}">Admin Panel</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+          </div>
+        </div>
+
+      {% elif session.get('user') %}
+        <!-- ✅ Regular User is logged in -->
+        <div class="nav-user-wrapper">
+          <button id="navUserBtn" class="nav-user" aria-expanded="false">
+            <span class="nav-avatar">{{ (session.get('name') or '')[:1]|upper }}</span>
+            <span class="nav-username">{{ session.get('name') }}</span>
+            <svg class="nav-caret" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M5 7L10 12L15 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div id="navUserDropdown" class="nav-user-dropdown" aria-hidden="true">
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+          </div>
+        </div>
+
       {% else %}
+        <!-- ❌ Not logged in -->
         <a href="{{ url_for('login') }}">Login</a>
         <a href="{{ url_for('register') }}">Register</a>
       {% endif %}
-    </div>
+    </nav>
   </div>
+</header>
+
+
 
   <!-- 🌟 Register Form -->
   <div class="auth-container">
@@ -65,6 +107,38 @@
       }, 4000); // 4 seconds
     });
   });
+  (function(){
+    const btn = document.getElementById('navUserBtn');
+    const wrapper = btn && btn.closest('.nav-user-wrapper');
+
+    function closeDropdown() {
+      if (wrapper) wrapper.classList.remove('open');
+      btn && btn.setAttribute('aria-expanded', 'false');
+      const dropdown = document.getElementById('navUserDropdown');
+      if (dropdown) dropdown.setAttribute('aria-hidden', 'true');
+    }
+
+    function toggleDropdown(e) {
+      e.stopPropagation();
+      if (!wrapper) return;
+      wrapper.classList.toggle('open');
+      const isOpen = wrapper.classList.contains('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      const dropdown = document.getElementById('navUserDropdown');
+      if (dropdown) dropdown.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    }
+
+    if (btn) {
+      btn.addEventListener('click', toggleDropdown);
+      // close on Esc
+      document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeDropdown(); });
+      // close on outside click
+      document.addEventListener('click', (ev) => {
+        if (!wrapper) return;
+        if (!wrapper.contains(ev.target)) closeDropdown();
+      });
+    }
+  })();
 </script>
 
 </body>

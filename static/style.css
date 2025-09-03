@@ -25,7 +25,6 @@ body {
   line-height: 1.6;
 }
 
-/* === Navbar === */
 /* === Sleek Premium Navbar === */
 .navbar {
   position: sticky;
@@ -108,6 +107,15 @@ body {
 }
 
 
+.nav-user {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid #e6e6e6;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: #333;
+  background: #fff;
+}
+
 /* === Hero Section === */
 .hero {
   background: linear-gradient(to right, var(--light-green), var(--soft-yellow));
@@ -178,11 +186,6 @@ body {
   font-size: 1.3rem;
   margin: 0.5rem 0;
   color: var(--secondary-green);
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px var(--shadow);
 }
 
 .product-actions {
@@ -452,4 +455,145 @@ footer {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ---- Nav user / profile pill ---- */
+.nav-user-wrapper { position: relative; display: inline-block; }
+
+.nav-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 6px 10px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+  color: #333;
+  font-weight: 600;
+}
+
+.nav-user:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.nav-avatar {
+  min-width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-green, #66bb6a), var(--primary-green, #2e7d32));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* Username text (hidden on very small screens) */
+.nav-username {
+  display: inline-block;
+  color: #222;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+/* caret small icon */
+.nav-caret { color: #666; opacity: .7; }
+
+/* Dropdown */
+.nav-user-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: var(--white);
+  border-radius: 10px;
+  padding: 0.5rem;
+  min-width: 160px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.06);
+  display: none; /* toggled by JS */
+  z-index: 1200;
+}
+
+.nav-user-dropdown a {
+  display: block;
+  padding: 0.6rem 0.9rem;
+  color: #333;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.nav-user-dropdown a:hover {
+  background: var(--light-green, #E8F5E9);
+  color: var(--primary-green, #2E7D32);
+}
+
+/* show dropdown */
+.nav-user-wrapper.open .nav-user-dropdown { display: block; }
+
+/* responsive: hide username on tiny screens, show only avatar */
+@media (max-width: 520px) {
+  .nav-username { display: none; }
+  .nav-caret { display: none; }
+  .nav-links { gap: 0.6rem; } /* tighten space */
+}
+
+
+/* Profile Page */
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4rem;
+}
+
+.profile-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  width: 300px;
+  transition: transform 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  border: 3px solid #4CAF50;
+}
+
+.profile-card h2 {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.profile-card p {
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+.logout-btn {
+  background: #f44336;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #d32f2f;
 }

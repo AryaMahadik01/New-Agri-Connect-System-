@@ -22,6 +22,14 @@ wishlist_col = db["wishlist"]
 def home():
     return render_template("index.html")
 
+@app.route("/profile")
+def profile():
+    if not session.get("user"):
+        flash("Please log in to view your profile.", "warning")
+        return redirect(url_for("login"))
+    return render_template("profile.html", name=session.get("name"), email=session.get("user"))
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -34,34 +42,74 @@ def register():
             return redirect(url_for("login"))
 
         hashed_pw = generate_password_hash(password)
-        users_col.insert_one({"name": name, "email": email, "password": hashed_pw})
+        users_col.insert_one({
+            "name": name,
+            "email": email,
+            "password": hashed_pw,
+            "role": "user"  # 🔥 Default user role
+        })
         flash("Registration successful! Please login.", "success")
         return redirect(url_for("login"))
 
     return render_template("register.html")
 
+
+# --- USER LOGIN ---
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form["email"]
+        email = request.form["email"].strip()
         password = request.form["password"]
         user = users_col.find_one({"email": email})
-
         if user and check_password_hash(user["password"], password):
+            # Keep old key for your existing cart/wishlist logic
             session["user"] = user["email"]
-            flash("Login successful!", "success")
+            # Add richer session data
+            session["email"] = user["email"]
+            session["name"]  = user.get("name", "User")
+            session["role"]  = user.get("role", "user")
+            flash(f"Welcome back, {session['name']}! 👋", "success")
             return redirect(url_for("home"))
-
         flash("Invalid credentials. Try again.", "error")
         return redirect(url_for("login"))
-
     return render_template("login.html")
 
+
+# --- ADMIN LOGIN ---
+@app.route("/admin-login", methods=["GET", "POST"])
+def admin_login():
+    if request.method == "POST":
+        email = request.form["email"].strip()
+        password = request.form["password"]
+        admin = users_col.find_one({"email": email, "role": "admin"})
+        if admin and check_password_hash(admin["password"], password):
+            session["user"]  = admin["email"]       # for existing logic
+            session["email"] = admin["email"]
+            session["name"]  = admin.get("name", "Admin")
+            session["role"]  = "admin"
+            flash(f"Welcome, {session['name']} (Admin) ✅", "success")
+            return redirect(url_for("admin_dashboard"))
+        flash("Invalid admin credentials.", "error")
+        return redirect(url_for("admin_login"))
+    return render_template("admin_login.html")
+
+@app.route("/admin")
+def admin_dashboard():
+    if "user" not in session or session.get("role") != "admin":
+        flash("Access denied!", "error")
+        return redirect(url_for("home"))
+
+    products = list(products_col.find())
+    users = list(users_col.find())
+    return render_template("admin_dashboard.html", products=products, users=users)
+
+
+# --- LOGOUT ---
 @app.route("/logout")
 def logout():
-    session.pop("user", None)
-    flash("Logged out successfully.", "success")
-    return redirect(url_for("home"))
+    session.clear()  # ✅ Clears ALL session data
+    flash("You have been logged out successfully.", "success")
+    return redirect(url_for("login"))
 
 @app.route("/products")
 def products():

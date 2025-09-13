@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fertilizers - AgriConnect</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+
+  <h2 style="text-align:center; margin-top:1rem;">Fertilizers</h2>
+
+  <div class="products-container">
+    {% for product in products %}
+      <div class="product-card">
+        {% if product.image %}
+          <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+        {% else %}
+          <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="{{ product.name }}">
+        {% endif %}
+        <h3>{{ product.name }}</h3>
+        <p class="product-price">₹{{ product.price }}</p>
+        <p>{{ product.description }}</p>
+        <div class="product-actions">
+          <a class="btn" href="{{ url_for('add_to_cart', product_id=product._id) }}">Add to Cart</a>
+          <a class="btn wishlist-btn" href="{{ url_for('add_to_wishlist', product_id=product._id) }}">Wishlist</a>
+        </div>
+      </div>
+    {% else %}
+      <p style="text-align:center; margin-top:2rem;">No fertilizers available right now.</p>
+    {% endfor %}
+  </div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

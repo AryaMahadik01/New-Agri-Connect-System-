@@ -71,6 +71,8 @@ body {
 .nav-links {
   display: flex;
   gap: 1.5rem;
+  justify-content: space-between; /* space between logo and right side */
+  align-items: center;            /* vertical alignment */
 }
 
 .nav-links a {

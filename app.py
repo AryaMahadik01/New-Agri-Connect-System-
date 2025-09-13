@@ -86,7 +86,7 @@ def admin_login():
             session["user"]  = admin["email"]       # for existing logic
             session["email"] = admin["email"]
             session["name"]  = admin.get("name", "Admin")
-            session["role"]  = "admin"
+            session["role"] = "admin"
             flash(f"Welcome, {session['name']} (Admin) ✅", "success")
             return redirect(url_for("admin_dashboard"))
         flash("Invalid admin credentials.", "error")
@@ -165,6 +165,28 @@ def view_wishlist():
     wishlist_items = list(wishlist_col.find({"user": session["user"]}))
     products = [products_col.find_one({"_id": ObjectId(item["product_id"])}) for item in wishlist_items]
     return render_template("wishlist.html", products=products)
+
+
+@app.route("/seeds")
+def seeds():
+    items = list(products_col.find({"category": "seeds"}))
+    return render_template("seeds.html", products=items)
+
+@app.route("/tools")
+def tools():
+    items = list(products_col.find({"category": "tools"}))
+    return render_template("tools.html", products=items)
+
+@app.route("/pesticides")
+def pesticides():
+    items = list(products_col.find({"category": "pesticides"}))
+    return render_template("pesticides.html", products=items)
+
+@app.route("/fertilizers")
+def fertilizers():
+    items = list(products_col.find({"category": "fertilizers"}))
+    return render_template("fertilizers.html", products=items)
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

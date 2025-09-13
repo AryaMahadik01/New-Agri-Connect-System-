@@ -7,6 +7,7 @@
     <title>Document</title>
 </head>
 <body>
+  {% include 'navbar.html' %}
     <header class="navbar">
   <div class="nav-container">
     <a href="{{ url_for('home') }}" class="logo">
@@ -66,48 +67,7 @@
 
     <h1>admin dashboard</h1>
 
-    <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toasts = document.querySelectorAll(".toast");
-    toasts.forEach((toast) => {
-      setTimeout(() => {
-        toast.remove();
-      }, 4000); // 4 seconds
-    });
-  });
-  (function(){
-    const btn = document.getElementById('navUserBtn');
-    const wrapper = btn && btn.closest('.nav-user-wrapper');
-
-    function closeDropdown() {
-      if (wrapper) wrapper.classList.remove('open');
-      btn && btn.setAttribute('aria-expanded', 'false');
-      const dropdown = document.getElementById('navUserDropdown');
-      if (dropdown) dropdown.setAttribute('aria-hidden', 'true');
-    }
-
-    function toggleDropdown(e) {
-      e.stopPropagation();
-      if (!wrapper) return;
-      wrapper.classList.toggle('open');
-      const isOpen = wrapper.classList.contains('open');
-      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      const dropdown = document.getElementById('navUserDropdown');
-      if (dropdown) dropdown.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-    }
-
-    if (btn) {
-      btn.addEventListener('click', toggleDropdown);
-      // close on Esc
-      document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeDropdown(); });
-      // close on outside click
-      document.addEventListener('click', (ev) => {
-        if (!wrapper) return;
-        if (!wrapper.contains(ev.target)) closeDropdown();
-      });
-    }
-  })();
-</script>
-
+    
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

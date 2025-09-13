@@ -14,7 +14,7 @@ products_col.insert_many([
         "name": "Wheat Seeds",
         "price": 100,
         "description": "High-yield wheat seeds suitable for multiple soil types.",
-        "image": "images/wheat.png"
+        "image": "images/tools/tool1.png"
     },
     {
         "name": "Rice Seeds",
@@ -41,5 +41,37 @@ products_col.insert_many([
         "image": "images/tools.png"
     }
 ])
+
+# products_col.insert_many([
+#     {
+#         "name": "Wheat Seeds",
+#         "price": 100,
+#         "description": "High-yield wheat seeds suitable for multiple soil types.",
+#         "image": "images/seeds/wheat.png",
+#         "category": "seeds"
+#     },
+#     {
+#         "name": "Organic Fertilizer",
+#         "price": 250,
+#         "description": "100% natural organic fertilizer to boost soil fertility.",
+#         "image": "images/fertilizer.png",
+#         "category": "fertilizers"
+#     },
+#     {
+#         "name": "Tractor Tool Set",
+#         "price": 5000,
+#         "description": "Durable farming tools to support agricultural work.",
+#         "image": "images/tools/toolset.png",
+#         "category": "tools"
+#     },
+#     {
+#         "name": "Insecticide A",
+#         "price": 150,
+#         "description": "Effective protection against common crop pests.",
+#         "image": "images/pesticides/insecticide.png",
+#         "category": "pesticides"
+#     }
+# ])
+
 
 print("✅ Database seeded successfully with sample products!")

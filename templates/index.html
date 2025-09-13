@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgriConnect - Home</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  
 </head>
 <body>
   <!-- 🌟 Toast Notifications -->
@@ -18,8 +19,7 @@
   {% endwith %}
 </div>
 
-  <!-- 🌿 Navbar -->
-<header class="navbar">
+<!-- <header class="navbar">
   <div class="nav-container">
     <a href="{{ url_for('home') }}" class="logo">
       <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-icon">
@@ -33,7 +33,7 @@
       <a href="{{ url_for('view_wishlist') }}">Wishlist</a>
 
       {% if session.get('admin') %}
-        <!-- ✅ Admin is logged in -->
+        
         <div class="nav-user-wrapper">
           <button id="navUserBtn" class="nav-user" aria-expanded="false">
             <span class="nav-avatar">A</span>
@@ -50,7 +50,7 @@
         </div>
 
       {% elif session.get('user') %}
-        <!-- ✅ Regular User is logged in -->
+       
         <div class="nav-user-wrapper">
           <button id="navUserBtn" class="nav-user" aria-expanded="false">
             <span class="nav-avatar">{{ (session.get('name') or '')[:1]|upper }}</span>
@@ -67,16 +67,16 @@
         </div>
 
       {% else %}
-        <!-- ❌ Not logged in -->
+        
         <a href="{{ url_for('login') }}">Login</a>
         <a href="{{ url_for('register') }}">Register</a>
       {% endif %}
     </nav>
   </div>
-</header>
+</header> -->
 
 
-
+{% include 'navbar.html' %}
 
   <!-- Hero Section -->
   <section class="hero">
@@ -87,14 +87,12 @@
 
   <!-- Quick Access -->
   <section class="categories">
-    <h2>Quick Access</h2>
+    <h2>Shop By Categories</h2>
     <div class="module-cards">
-      <a href="{{ url_for('products') }}" class="module-cate">Buy Products</a>
-      <a href="{{ url_for('view_cart') }}" class="module-cate">Your Cart</a>
-      <a href="{{ url_for('view_wishlist') }}" class="module-cate">Wishlist</a>
-      {% if not session.get('user') %}
-      <a href="{{ url_for('register') }}" class="module-cate">Join Us</a>
-      {% endif %}
+      <a href="{{ url_for('seeds') }}" class="module-cate">seeds</a>
+      <a href="{{ url_for('tools') }}" class="module-cate">tools</a>
+      <a href="{{ url_for('pesticides') }}" class="module-cate">pesticides</a>
+      <a href="{{ url_for('fertilizers') }}" class="module-cate">fertilizers</a>
     </div>
    
 
@@ -104,47 +102,7 @@
   <footer>
     <p>&copy; 2025 AgriConnect | Empowering Farmers and Buyers</p>
   </footer>
-   <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toasts = document.querySelectorAll(".toast");
-    toasts.forEach((toast) => {
-      setTimeout(() => {
-        toast.remove();
-      }, 4000); // 4 seconds
-    });
-  });
-  (function(){
-    const btn = document.getElementById('navUserBtn');
-    const wrapper = btn && btn.closest('.nav-user-wrapper');
 
-    function closeDropdown() {
-      if (wrapper) wrapper.classList.remove('open');
-      btn && btn.setAttribute('aria-expanded', 'false');
-      const dropdown = document.getElementById('navUserDropdown');
-      if (dropdown) dropdown.setAttribute('aria-hidden', 'true');
-    }
-
-    function toggleDropdown(e) {
-      e.stopPropagation();
-      if (!wrapper) return;
-      wrapper.classList.toggle('open');
-      const isOpen = wrapper.classList.contains('open');
-      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      const dropdown = document.getElementById('navUserDropdown');
-      if (dropdown) dropdown.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
-    }
-
-    if (btn) {
-      btn.addEventListener('click', toggleDropdown);
-      // close on Esc
-      document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeDropdown(); });
-      // close on outside click
-      document.addEventListener('click', (ev) => {
-        if (!wrapper) return;
-        if (!wrapper.contains(ev.target)) closeDropdown();
-      });
-    }
-  })();
-</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

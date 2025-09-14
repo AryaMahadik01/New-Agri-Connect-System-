@@ -120,7 +120,7 @@ body {
 
 /* === Hero Section === */
 .hero {
-  background: linear-gradient(to right, var(--light-green), var(--soft-yellow));
+  background: linear-gradient(to top, var(--soft-yellow), var(--light-green));
   text-align: center;
   padding: 5rem 2rem;
   max-width: var(--max-width);
@@ -135,7 +135,7 @@ body {
 }
 
 .hero p {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   margin: 1rem 0;
 }
 

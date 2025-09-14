@@ -80,8 +80,13 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <h1>Welcome to AgriConnect</h1>
-    <p>Your one-stop marketplace for agriculture products</p>
+    <h1>Welcome to Agri-Connect</h1>
+    <h2>Your one-stop marketplace for agriculture products</h2>
+    <p><i>Agriculture remains the backbone of many economies, particularly in countries 
+          like India where a significant portion of the population depends on farming for 
+          livelihood. However, the agricultural sector often faces challenges such as lack 
+          of access to modern tools, insufficient information about fertilizers and 
+          pesticides, and limited awareness of government schemes.</i></p>
     <a class="btn" href="{{ url_for('products') }}">Shop Now</a>
   </section>
 
@@ -89,15 +94,41 @@
   <section class="categories">
     <h2>Shop By Categories</h2>
     <div class="module-cards">
-      <a href="{{ url_for('seeds') }}" class="module-cate">seeds</a>
-      <a href="{{ url_for('tools') }}" class="module-cate">tools</a>
-      <a href="{{ url_for('pesticides') }}" class="module-cate">pesticides</a>
-      <a href="{{ url_for('fertilizers') }}" class="module-cate">fertilizers</a>
+      <a href="{{ url_for('fertilizers') }}" class="module-cate">🧪 F E R T I L I Z E R</a>
+      <a href="{{ url_for('seeds') }}" class="module-cate">🌱 S E E D S</a>
+      <a href="{{ url_for('tools') }}" class="module-cate">🛠️ T O O L S</a>
+      <a href="{{ url_for('pesticides') }}" class="module-cate">🐛 P E S T I C I D E</a>
     </div>
-   
-
   </section>
 
+
+  <section class="categories">
+      <h2>Explore More</h2>
+      <div class="module-cards">
+        <a href="{{ url_for('news') }}" class="module-cate">📰 AGRICULTURE NEWS </a>
+        <a href="{{ url_for('govschemes') }}" class="module-cate">🏛️ GOVT. SCHEMES</a>
+        <a href="{{ url_for('cropsdetails') }}" class="module-cate">🌾 70+ CROPS DETAILS</a>
+        <a href="{{ url_for('knowledgehub') }}" class="module-cate">💡KNOWLEDGE HUB</a>
+      </div> 
+    </section>
+
+    <section class="hero">
+      <h2>🌱 About Agri-Connect 🌱</h2>
+      <p>
+        Agri-Connect is a farmer-friendly platform helping bridge the gap between
+        agriculture suppliers and buyers. With real-time news, government scheme
+        awareness, and in-depth crop data, we aim to empower Indian agriculture.
+        Our mission is to provide a seamless experience for farmers, suppliers, and
+        buyers, ensuring a mutually beneficial and sustainable agricultural ecosystem.
+      </p> <hr>
+      <p>
+        Agri-Connect goes beyond transactions—it’s a knowledge hub and decision-making 
+        companion for the modern farmer. The platform simplifies complex agricultural choices, from crop planning to market 
+        forecasting. Whether you're a seasoned cultivator or just starting out, 
+        AgriConnect offers tailored insights and a support network that grows with you, 
+        helping turn traditional farming into a tech-enabled, future-ready endeavor.
+      </p>
+    </section>
   <!-- Footer -->
   <footer>
     <p>&copy; 2025 AgriConnect | Empowering Farmers and Buyers</p>

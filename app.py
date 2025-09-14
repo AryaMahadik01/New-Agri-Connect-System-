@@ -187,6 +187,25 @@ def fertilizers():
     items = list(products_col.find({"category": "fertilizers"}))
     return render_template("fertilizers.html", products=items)
 
+@app.route("/cropsdetails")
+def cropsdetails():
+    items = list(products_col.find({"category": "cropsdetails"}))
+    return render_template("cropsdetails.html")
+
+@app.route("/govschemes")
+def govschemes():
+    items = list(products_col.find({"category": "govschemes"}))
+    return render_template("govschemes.html")
+
+@app.route("/news")
+def news():
+    items = list(products_col.find({"category": "news"}))
+    return render_template("news.html")
+
+@app.route("/knowledgehub")
+def knowledgehub():
+    items = list(products_col.find({"category": "knowledgehub"}))
+    return render_template("knowledgehub.html")
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

@@ -9,6 +9,7 @@ products_col = db["products"]
 products_col.delete_many({})
 
 products_col.insert_many([
+    # -------------------- Seeds Data -------------------- 
     {
         "name": "MARIGOLD SEEDS",
         "price": 1799,
@@ -177,6 +178,7 @@ products_col.insert_many([
         "image": "images/seeds/okra-seed.png",
         "category": "seeds"
     },
+    # -------------------- Fertilizers Data -------------------- 
     {
         "name": "Instafert Combi",
         "price": 650,
@@ -246,6 +248,84 @@ products_col.insert_many([
         "description": "Tata Rallis Nayazinc Fertilizer — Zinc Polyphoshate.",
         "image": "images/fertilizers/fert10.png",
         "category": "fertilizers"
+    },
+    # -------------------- Tools Data --------------------
+    {
+        "name": "GARDEN SHADE",
+        "price": 1599,
+        "description": "ANIL PACKAGING GARDEN SHADE NET SHADE NET",
+        "image": "images/tools/garden-shade.png",
+        "category": "tools"
+    },
+    {
+        "name": "HAND WEEDER",
+        "price": 550,
+        "description": " BHARAT 2 IN 1 HAND WEEDER WITH STRONG QUALITY",
+        "image": "images/tools/hand-weeder.png",
+        "category": "tools"
+    },
+    {
+        "name": "HARVESTER WITH BLADE",
+        "price": 300,
+        "description": "VGT MANGO PLUCKER/HARVESTER WITH SINGLE BLADE",
+        "image": "images/tools/harvester-with-blade.png",
+        "category": "tools"
+    },
+    {
+        "name": "HEAD TORCH",
+        "price": 750,
+        "description": "BALWAN SHAKTI LED FLASHLIGHT HEAD TORCH BT.50",
+        "image": "images/tools/head-torch.png",
+        "category": "tools"
+    },
+    {
+        "name": "KOYTA BLADE",
+        "price": 279,
+        "description": "Bharat Goa Akadi Without Handle",
+        "image": "images/tools/koyta.png",
+        "category": "tools"
+    },
+    {
+        "name": "MANUAL WEEDER",
+        "price": 499,
+        "description": "Bharat IO Inch Manual Weeder - Easy. Efficient Hand Tool for Farming",
+        "image": "images/tools/manual-weeder.png",
+        "category": "tools"
+    },
+    {
+        "name": "PRUNER WITH SAW",
+        "price": 1999,
+        "description": "HECTARE ALUMINUM TELESCOPIC LONG REACH (10 FEET) CUT AND HOLD PRUNER WITH SAW",
+        "image": "images/tools/pruner-with-saw.png",
+        "category": "tools"
+    },
+    {
+        "name": "SPRAY TANK",
+        "price": 1599,
+        "description": "Neptune NF•IOB Manual Knapsack Sprayer Hand-Operated High-pressure Pump 161 Tank Capacity",
+        "image": "images/tools/spray-tank.png",
+        "category": "tools"
+    },
+    {
+        "name": "AGRO TOOLSET",
+        "price": 1250,
+        "description": "A complete agricultural toolset featuring a brush cutter blade, shaft, safety gear, and accessories.",
+        "image": "images/tools/toolkit.png",
+        "category": "tools"
+    },
+    {
+        "name": "TRACTOR SPRAYER",
+        "price": 7000,
+        "description": "NEPTUNE TRACTOR MOUNTED SPRAYER (HTP GOLD PLUS)",
+        "image": "images/tools/tractor-sprayer.png",
+        "category": "tools"
+    },
+    {
+        "name": "WEED MAT",
+        "price": 950,
+        "description": "ANIL PACKAGING WEED MAT 100 GSM - weed Mat",
+        "image": "images/tools/weed-mat.png",
+        "category": "tools"
     },
     {
         "name": "SOLAR PANEL",
@@ -317,6 +397,7 @@ products_col.insert_many([
         "image": "images/tools/manual-seeder.png",
         "category": "tools"
     },
+    # -------------------- Pesticides Data --------------------
     {
         "name": "UPL saaf Fungicide",
         "price": 668,

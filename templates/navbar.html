@@ -16,8 +16,7 @@
       <a href="{{ url_for('view_wishlist') }}">Wishlist</a>
       <a href="{{ url_for('checkout') }}">Checkout</a>
 
-
-      {% if session.get('admin') %}
+      {% if session.get('role') == 'admin' %}
         <!-- ✅ Admin is logged in -->
         <div class="nav-user-wrapper">
           <button id="navUserBtn" class="nav-user" aria-expanded="false">
@@ -34,7 +33,7 @@
           </div>
         </div>
 
-      {% elif session.get('user') %}
+      {% elif session.get('role') == 'user' %}
         <!-- ✅ Regular User is logged in -->
         <div class="nav-user-wrapper">
           <button id="navUserBtn" class="nav-user" aria-expanded="false">

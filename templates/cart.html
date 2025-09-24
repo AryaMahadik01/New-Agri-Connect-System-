@@ -1,56 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Cart - AgriConnect</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  {% include 'navbar.html' %}
+{% extends 'base.html' %}
 
-  <!-- 🌟 Toast Notifications -->
-  <div id="toast-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="toast {{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-  </div>
+{% block title %}Cart - AgriConnect{% endblock %}
 
-  <div class="page-container">
-    <h1 class="page-title" style="text-align:center; margin-top:1rem;">🛒 Your Cart</h1>
+{% block content %}
+<h1 class="page-title" style="text-align:center; margin-top:1rem;">🛒 Your Cart</h1>
 
-    <!-- Cart Items -->
-    <div class="products-container">
-      {% for product in products %}
-        <div class="product-card">
-          <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
-          <h3>{{ product.name }}</h3>
-          <p>Price: ₹{{ product.price }}</p>
-          <a href="{{ url_for('remove_from_cart', product_id=product._id) }}" class="btn danger">❌ Remove</a>
-        </div>
-      {% endfor %}
+<div class="products-container">
+  {% for product in products %}
+    <div class="product-card">
+      <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+      <h3>{{ product.name }}</h3>
+      <p>Price: ₹{{ product.price }}</p>
+      <a href="{{ url_for('remove_from_cart', product_id=product._id) }}" class="btn danger">❌ Remove</a>
     </div>
+  {% endfor %}
+</div>
 
-<!-- Empty Cart Button -->
 <div class="empty-cart">
   <a href="{{ url_for('empty_cart') }}" class="btn danger">🗑 Empty Cart</a>
 </div>
 
-
-    <!-- If cart is not empty -->
-    {% if products %}
-      <!-- Proceed to Checkout Button -->
-      <div class="cart-actions" style="text-align:center; margin-top:2rem;">
-        <a href="{{ url_for('checkout') }}" class="btn checkout-btn">✅ Proceed to Checkout</a>
-      </div>
-    {% else %}
-      <p style="text-align:center; margin-top:1rem;">Your cart is empty.</p>
-    {% endif %}
-  </div>
-
-  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+{% if products %}
+<div class="cart-actions">
+  <a href="{{ url_for('checkout') }}" class="btn checkout-btn">✅ Proceed to Checkout</a>
+</div>
+{% else %}
+<p style="text-align:center; margin-top:1rem;">Your cart is empty.</p>
+{% endif %}
+{% endblock %}

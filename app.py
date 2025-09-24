@@ -106,9 +106,19 @@ def admin_dashboard():
         flash("Access denied!", "error")
         return redirect(url_for("home"))
 
-    products = list(products_col.find())
-    users = list(users_col.find())
-    return render_template("admin_dashboard.html", products=products, users=users)
+    # Fetch all orders
+    orders = list(orders_col.find().sort("created_at", -1))  # ✅ Call find()
+
+    # Convert ObjectId to string for Jinja
+    for order in orders:
+        order["_id"] = str(order["_id"])
+        for item in order.get("items", []):
+            item["name"] = item.get("name", "Unknown")
+            item["price"] = item.get("price", 0)
+            item["quantity"] = item.get("quantity", 1)
+
+    return render_template("admin_dashboard.html", orders=orders)
+
 
 
 # --- LOGOUT ---
@@ -320,6 +330,38 @@ def empty_cart():
     cart_col.delete_many({"user": session["user"]})
     flash("🗑 Your cart has been emptied.", "success")
     return redirect(url_for("checkout"))
+
+
+@app.route("/admin/order/<order_id>")
+def view_order_details(order_id):
+    if "user" not in session or session.get("role") != "admin":
+        flash("Access denied!", "error")
+        return redirect(url_for("home"))
+
+    order = orders_col.find_one({"_id": ObjectId(order_id)})
+    if not order:
+        flash("Order not found!", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    return render_template("order_details.html", order=order)
+
+@app.route("/admin/approve_order/<order_id>")
+def approve_order(order_id):
+    if "user" not in session or session.get("role") != "admin":
+        flash("Access denied!", "error")
+        return redirect(url_for("home"))
+
+    result = orders_col.update_one(
+        {"_id": ObjectId(order_id)},
+        {"$set": {"status": "Completed"}}
+    )
+
+    if result.modified_count:
+        flash("✅ Order approved successfully!", "success")
+    else:
+        flash("⚠ Order not found or already approved.", "warning")
+
+    return redirect(url_for("admin_dashboard"))
 
 
 

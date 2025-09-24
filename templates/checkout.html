@@ -1,27 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Products - AgriConnect</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  {% include 'navbar.html' %}
-  <!-- 🌟 Toast Notifications -->
-<div id="toast-container">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="toast {{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-</div>
+{% extends 'base.html' %}
 
- <div class="page-container">
-  <h1 class="page-title" style="text-align:center; margin-top:1rem;">🛒 Checkout</h1>
+{% block title %}Checkout - AgriConnect{% endblock %}
 
-  <!-- Cart Items -->
+{% block content %}
+<h1 class="page-title" style="text-align:center; margin-top:1rem;">🛒 Checkout</h1>
+
 <div class="products-container">
   {% for item in cart %}
     <div class="product-card">
@@ -29,7 +12,6 @@
       <h3>{{ item.name }}</h3>
       <p>Price: ₹{{ item.price }}</p>
 
-      <!-- Quantity Control -->
       <div class="quantity-control">
         <a href="{{ url_for('update_cart', cart_id=item._id, action='dec') }}" class="qty-btn">➖</a>
         <span class="qty">{{ item.quantity }}</span>
@@ -41,29 +23,21 @@
   {% endfor %}
 </div>
 
-
-  <!-- Bill Summary -->
-  <div class="checkout-summary">
-    <h2>🧾 Bill Summary</h2>
-    <p>Subtotal: ₹{{ subtotal }}</p>
-    <p>Tax (5%): ₹{{ tax }}</p>
-    <p><strong>Grand Total: ₹{{ grandtotal }}</strong></p>
-  </div>
-
-  <!-- Payment Section -->
-  <div class="checkout-payment">
-    <h2>💳 Payment Method</h2>
-    <form method="POST" action="{{ url_for('place_order') }}">
-      <label><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label><br>
-      <label><input type="radio" name="payment" value="upi"> UPI (Google Pay, PhonePe, etc.)</label><br>
-      <label><input type="radio" name="payment" value="card"> Debit / Credit Card</label><br>
-
-      <button type="submit" class="btn">✅ Place Order</button>
-    </form>
-  </div>
+<div class="checkout-summary">
+  <h2>🧾 Bill Summary</h2>
+  <p>Subtotal: ₹{{ subtotal }}</p>
+  <p>Tax (5%): ₹{{ tax }}</p>
+  <p><strong>Grand Total: ₹{{ grandtotal }}</strong></p>
 </div>
 
+<div class="checkout-payment">
+  <h2>💳 Payment Method</h2>
+  <form method="POST" action="{{ url_for('place_order') }}">
+    <label><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label><br>
+    <label><input type="radio" name="payment" value="upi"> UPI (Google Pay, PhonePe, etc.)</label><br>
+    <label><input type="radio" name="payment" value="card"> Debit / Credit Card</label><br>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+    <button type="submit" class="btn">✅ Place Order</button>
+  </form>
+</div>
+{% endblock %}

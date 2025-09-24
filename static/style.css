@@ -702,3 +702,59 @@ footer {
   background: var(--accent-orange);
   transform: translateY(-3px);
 }
+
+/* Admin Tables */
+.admin-table {
+  width: 90%;
+  margin: 1.5rem auto;
+  border-collapse: collapse;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.admin-table th, .admin-table td {
+  border: 1px solid #ddd;
+  padding: 0.8rem 1rem;
+  text-align: left;
+}
+
+.admin-table th {
+  background-color: var(--primary-green);
+  color: white;
+}
+
+.admin-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.admin-table .btn {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.8rem;
+}
+
+.admin-table .btn.danger {
+  background: #e53935;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+}
+
+/* Admin Order Cards */
+.order-items ul {
+  list-style: disc;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.products-container .product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.products-container .product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+.product-actions .btn {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}

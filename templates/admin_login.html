@@ -1,82 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login - AgriConnect</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  {% include 'navbar.html' %}
-    <header class="navbar">
-  <div class="nav-container">
-    <a href="{{ url_for('home') }}" class="logo">
-      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-icon">
-      AgriConnect
-    </a>
+{% extends 'base.html' %}
 
-    <nav class="nav-links">
-      <a href="{{ url_for('home') }}">Home</a>
-      <a href="{{ url_for('products') }}">Products</a>
-      <a href="{{ url_for('view_cart') }}">Cart</a>
-      <a href="{{ url_for('view_wishlist') }}">Wishlist</a>
+{% block title %}Admin Login - AgriConnect{% endblock %}
 
-      {% if session.get('role') == 'admin' %}
-        <!-- ✅ Admin is logged in -->
-        <div class="nav-user-wrapper">
-          <button id="navUserBtn" class="nav-user" aria-expanded="false">
-            <span class="nav-avatar">A</span>
-            <span class="nav-username">Admin</span>
-            <svg class="nav-caret" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M5 7L10 12L15 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-
-          <div id="navUserDropdown" class="nav-user-dropdown" aria-hidden="true">
-            <a href="{{ url_for('admin_dashboard') }}">Admin Panel</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-          </div>
-        </div>
-
-      {% elif session.get('user') %}
-        <!-- ✅ Regular User is logged in -->
-        <div class="nav-user-wrapper">
-          <button id="navUserBtn" class="nav-user" aria-expanded="false">
-            <span class="nav-avatar">{{ (session.get('name') or '')[:1]|upper }}</span>
-            <span class="nav-username">{{ session.get('name') }}</span>
-            <svg class="nav-caret" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M5 7L10 12L15 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-
-          <div id="navUserDropdown" class="nav-user-dropdown" aria-hidden="true">
-            <a href="{{ url_for('profile') }}">Profile</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-          </div>
-        </div>
-
-      {% else %}
-        <!-- ❌ Not logged in -->
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Register</a>
-      {% endif %}
-    </nav>
-  </div>
-</header>
-
-
-  <div class="form-container">
+{% block content %}
+<div class="auth-container">
+  <div class="auth-box">
     <h2>Admin Login</h2>
     <form method="POST" action="{{ url_for('admin_login') }}">
       <label>Email:</label>
       <input type="email" name="email" required>
+
       <label>Password:</label>
       <input type="password" name="password" required>
-      <button type="submit" class="btn">Login as Admin</button>
+
+      <button type="submit" class="btn auth-btn">Login as Admin</button>
     </form>
-    <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+    <p class="auth-footer">
+      <a href="{{ url_for('home') }}">Back to Home</a>
+    </p>
   </div>
-  
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+</div>
+{% endblock %}

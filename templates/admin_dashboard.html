@@ -1,73 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Document</title>
-</head>
-<body>
-  {% include 'navbar.html' %}
-    <header class="navbar">
-  <div class="nav-container">
-    <a href="{{ url_for('home') }}" class="logo">
-      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-icon">
-      AgriConnect
-    </a>
+{% extends 'base.html' %}
 
-    <nav class="nav-links">
-      <a href="{{ url_for('home') }}">Home</a>
-      <a href="{{ url_for('products') }}">Products</a>
-      <a href="{{ url_for('view_cart') }}">Cart</a>
-      <a href="{{ url_for('view_wishlist') }}">Wishlist</a>
+{% block title %}Admin Dashboard - AgriConnect{% endblock %}
 
-      {% if session.get('admin') %}
-        <!-- ✅ Admin is logged in -->
-        <div class="nav-user-wrapper">
-          <button id="navUserBtn" class="nav-user" aria-expanded="false">
-            <span class="nav-avatar">A</span>
-            <span class="nav-username">Admin</span>
-            <svg class="nav-caret" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M5 7L10 12L15 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+{% block content %}
+<h1 style="text-align:center; margin-top:1rem; color: var(--secondary-green);">🛒 Admin Dashboard</h1>
 
-          <div id="navUserDropdown" class="nav-user-dropdown" aria-hidden="true">
-            <a href="{{ url_for('admin_dashboard') }}">Admin Panel</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-          </div>
-        </div>
+<h2 style="margin-top:1.5rem; text-align:center; color: var(--primary-green);">User Orders</h2>
 
-      {% elif session.get('user') %}
-        <!-- ✅ Regular User is logged in -->
-        <div class="nav-user-wrapper">
-          <button id="navUserBtn" class="nav-user" aria-expanded="false">
-            <span class="nav-avatar">{{ (session.get('name') or '')[:1]|upper }}</span>
-            <span class="nav-username">{{ session.get('name') }}</span>
-            <svg class="nav-caret" width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M5 7L10 12L15 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+<div class="products-container">
+  {% for order in orders %}
+    <div class="product-card" style="background: linear-gradient(to bottom right, #f0fdf4, #e6f4ea); border: 2px solid var(--primary-green);">
 
-          <div id="navUserDropdown" class="nav-user-dropdown" aria-hidden="true">
-            <a href="{{ url_for('profile') }}">Profile</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-          </div>
-        </div>
+      <p><strong>User:</strong> {{ order.user }}</p>
+      <p><strong>Status:</strong> 
+        <span style="color: {{ '#f39c12' if order.status == 'Pending' else '#2ecc71' if order.status == 'Completed' else '#e74c3c' }}; font-weight:bold;">
+          {{ order.status }}
+        </span>
+      </p>
+      <p><strong>Payment:</strong> {{ order.payment_method | upper }}</p>
+      <p><strong>Grand Total:</strong> ₹{{ order.grandtotal }}</p>
 
-      {% else %}
-        <!-- ❌ Not logged in -->
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Register</a>
-      {% endif %}
-    </nav>
-  </div>
-</header>
+      <div class="order-items" style="margin-top:1rem;">
+        <h4 style="color: var(--secondary-green);">Items:</h4>
+        <ul style="padding-left:1rem;">
+          {% for item in order["items"] %}
+            <li>{{ item.name }} × {{ item.quantity }} (₹{{ item.price * item.quantity }})</li>
+          {% endfor %}
+        </ul>
+      </div>
 
+      <!-- Actions -->
+      <div class="product-actions" style="justify-content: space-between; margin-top:1rem;">
+        <a class="btn" href="{{ url_for('view_order_details', order_id=order._id) }}">View Details</a>
 
-    <h1>admin dashboard</h1>
-
-    
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+        {% if order.status != 'Completed' %}
+          <a class="btn" style="background: #2ecc71;" href="{{ url_for('approve_order', order_id=order._id) }}">✅ Approve</a>
+        {% else %}
+          <span style="color: #2ecc71; font-weight:bold;">Approved</span>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <p style="text-align:center; margin-top:2rem; font-size:1.2rem; color:#555;">No orders placed yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

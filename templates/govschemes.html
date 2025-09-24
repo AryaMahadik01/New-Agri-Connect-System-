@@ -1,46 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Govt. Schemes - AgriConnect</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <!-- Navbar -->
-  {% include 'navbar.html' %}
+{% extends 'base.html' %}
 
-  <!-- Toast Notifications -->
-  <div id="toast-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="toast {{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-  </div>
+{% block title %}Government Schemes - AgriConnect{% endblock %}
 
-  <h2 style="text-align:center; margin-top:1rem;">Government Schemes</h2>
+{% block content %}
+<h2 style="text-align:center; margin-top:1rem;">Government Schemes</h2>
 
-  <div class="page-container">
-  <div class="products-grid">
-    {% for scheme in schemes %}
-      <div class="product-card">
-        <h3>{{ scheme.name }}</h3>
-        <p>{{ scheme.description }}</p>
-        <a href="{{ scheme.link }}" target="_blank" class="btn">Visit Official Site</a>
-      </div>
-    {% endfor %}
-  </div>
+<div class="products-grid">
+  {% for scheme in schemes %}
+    <div class="product-card">
+      <h3>{{ scheme.name }}</h3>
+      <p>{{ scheme.description }}</p>
+      <a href="{{ scheme.link }}" target="_blank" class="btn">Visit Official Site</a>
+    </div>
+  {% endfor %}
 </div>
-
-
-    <!-- Footer -->
-<footer>
-    <p>&copy; 2025 AgriConnect | Empowering Farmers and Buyers</p>
-</footer>
-
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html>
+{% endblock %}

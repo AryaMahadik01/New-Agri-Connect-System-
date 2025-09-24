@@ -1,46 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Register - AgriConnect</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  {% include 'navbar.html' %}
-    <!-- 🌟 Toast Notifications -->
-<div id="toast-container">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="toast {{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-</div>
+{% extends 'base.html' %}
 
-  <!-- 🌟 Register Form -->
-  <div class="auth-container">
-    <div class="auth-box">
-      <h2>Create an Account</h2>
-      <p class="auth-subtitle">Join AgriConnect today 🌱</p>
-      <form method="POST" action="{{ url_for('register') }}">
-        <label for="name">Full Name</label>
-        <input type="text" name="name" placeholder="Enter your full name" required>
+{% block title %}Register - AgriConnect{% endblock %}
 
-        <label for="email">Email</label>
-        <input type="email" name="email" placeholder="Enter your email" required>
+{% block content %}
+<div class="auth-container">
+  <div class="auth-box">
+    <h2>Create an Account</h2>
+    <p class="auth-subtitle">Join AgriConnect today 🌱</p>
+    <form method="POST" action="{{ url_for('register') }}">
+      <label for="name">Full Name</label>
+      <input type="text" name="name" placeholder="Enter your full name" required>
 
-        <label for="password">Password</label>
-        <input type="password" name="password" placeholder="Enter your password" required>
+      <label for="email">Email</label>
+      <input type="email" name="email" placeholder="Enter your email" required>
 
-        <button type="submit" class="btn auth-btn">Register</button>
-      </form>
-      <p class="auth-footer">
-        Already have an account? <a href="{{ url_for('login') }}">Login here</a>
-      </p>
-    </div>
+      <label for="password">Password</label>
+      <input type="password" name="password" placeholder="Enter your password" required>
+
+      <button type="submit" class="btn auth-btn">Register</button>
+    </form>
+    <p class="auth-footer">
+      Already have an account? <a href="{{ url_for('login') }}">Login here</a>
+    </p>
   </div>
-  
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+</div>
+{% endblock %}

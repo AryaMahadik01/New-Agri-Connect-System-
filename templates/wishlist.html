@@ -1,46 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Your Wishlist - AgriConnect</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  {% include 'navbar.html' %}
-  <!-- 🌟 Toast Notifications -->
-<div id="toast-container">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="toast {{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-</div>
+{% extends 'base.html' %}
 
-  <h2 style="text-align:center; margin-top:1rem;">Your Wishlist</h2>
+{% block title %}Wishlist - AgriConnect{% endblock %}
 
-  <div class="products-container">
-    {% for product in products %}
-      <div class="product-card">
-        {% if product.image %}
-          <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
-        {% else %}
-          <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="{{ product.name }}">
-        {% endif %}
-        <h3>{{ product.name }}</h3>
-        <p class="product-price">₹{{ product.price }}</p>
-        <p>{{ product.description }}</p>
-        <div class="product-actions">
-          <!-- Optional: Add remove from wishlist button here in future -->
-          <a class="btn wishlist-btn" href="{{ url_for('remove_from_wishlist', product_id=product._id) }}">Remove</a>
+{% block content %}
+<h2 style="text-align:center; margin-top:1rem;">Your Wishlist</h2>
 
-        </div>
+<div class="products-container">
+  {% for product in products %}
+    <div class="product-card">
+      {% if product.image %}
+        <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+      {% else %}
+        <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="{{ product.name }}">
+      {% endif %}
+      <h3>{{ product.name }}</h3>
+      <p class="product-price">₹{{ product.price }}</p>
+      <p>{{ product.description }}</p>
+      <div class="product-actions">
+        <a class="btn wishlist-btn" href="{{ url_for('remove_from_wishlist', product_id=product._id) }}">Remove</a>
       </div>
-    {% else %}
-      <p style="text-align:center; margin-top:2rem;">Your wishlist is empty.</p>
-    {% endfor %}
-  </div>
-   
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
-</html>
+    </div>
+  {% else %}
+    <p style="text-align:center; margin-top:2rem;">Your wishlist is empty.</p>
+  {% endfor %}
+</div>
+{% endblock %}

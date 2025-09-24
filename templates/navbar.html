@@ -14,6 +14,8 @@
       <a href="{{ url_for('fertilizers') }}">Fertilizers</a>
       <a href="{{ url_for('view_cart') }}">Cart</a>
       <a href="{{ url_for('view_wishlist') }}">Wishlist</a>
+      <a href="{{ url_for('checkout') }}">Checkout</a>
+
 
       {% if session.get('admin') %}
         <!-- ✅ Admin is logged in -->

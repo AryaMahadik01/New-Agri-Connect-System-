@@ -45,3 +45,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 })();
+
+function updateQuantity(productId, change) {
+  const qtySpan = document.getElementById(`qty-${productId}`);
+  let qty = parseInt(qtySpan.innerText);
+  qty = Math.max(1, qty + change); // Prevent 0 or negative
+
+  qtySpan.innerText = qty;
+
+  // Update item total
+  const price = parseInt(document.querySelector(`#total-${productId}`).getAttribute("data-price") || 0);
+  document.getElementById(`total-${productId}`).innerText = qty * price;
+
+  // TODO: Optionally send AJAX request to backend to update DB
+}
+

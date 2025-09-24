@@ -1,49 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Your Cart - AgriConnect</title>
+  <meta charset="UTF-8">
+  <title>Cart - AgriConnect</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
   {% include 'navbar.html' %}
+
   <!-- 🌟 Toast Notifications -->
-<div id="toast-container">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="toast {{ category }}">{{ message }}</div>
+  <div id="toast-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="toast {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <div class="page-container">
+    <h1 class="page-title" style="text-align:center; margin-top:1rem;">🛒 Your Cart</h1>
+
+    <!-- Cart Items -->
+    <div class="products-container">
+      {% for product in products %}
+        <div class="product-card">
+          <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+          <h3>{{ product.name }}</h3>
+          <p>Price: ₹{{ product.price }}</p>
+          <a href="{{ url_for('remove_from_cart', product_id=product._id) }}" class="btn danger">❌ Remove</a>
+        </div>
       {% endfor %}
-    {% endif %}
-  {% endwith %}
+    </div>
+
+<!-- Empty Cart Button -->
+<div class="empty-cart">
+  <a href="{{ url_for('empty_cart') }}" class="btn danger">🗑 Empty Cart</a>
 </div>
 
 
-
-
-
-  <h2 style="text-align:center; margin-top:1rem;">Your Cart</h2>
-
-  <div class="products-container">
-    {% for product in products %}
-      <div class="product-card">
-        {% if product.image %}
-          <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
-        {% else %}
-          <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="{{ product.name }}">
-        {% endif %}
-        <h3>{{ product.name }}</h3>
-        <p class="product-price">₹{{ product.price }}</p>
-        <p>{{ product.description }}</p>
-        <div class="product-actions">
-          <!-- Optional: Add remove from cart button here in future -->
-          <a class="btn" href="{{ url_for('remove_from_cart', product_id=product._id) }}">Remove</a>
-        </div>
+    <!-- If cart is not empty -->
+    {% if products %}
+      <!-- Proceed to Checkout Button -->
+      <div class="cart-actions" style="text-align:center; margin-top:2rem;">
+        <a href="{{ url_for('checkout') }}" class="btn checkout-btn">✅ Proceed to Checkout</a>
       </div>
     {% else %}
-      <p style="text-align:center; margin-top:2rem;">Your cart is empty.</p>
-    {% endfor %}
+      <p style="text-align:center; margin-top:1rem;">Your cart is empty.</p>
+    {% endif %}
   </div>
-  
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
 
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
 </html>

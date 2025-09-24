@@ -1,48 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crops Details - AgriConnect</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <!-- Navbar -->
-  {% include 'navbar.html' %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crops Details - AgriConnect</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
 
-  <!-- Toast Notifications -->
-  <div id="toast-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="toast {{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-  </div>
-
-  <!-- Page Content -->
-  <main class="page-container">
-    <h2 class="page-title">Crops Details</h2>
-    <div class="products-container">
-      {% for crop in crops %}
-        <div class="product-card">
-          <img src="{{ url_for('static', filename=crop.image) }}" alt="{{ crop.name }}">
-          <h3>{{ crop.name }}</h3>
-          <p><b>Location:</b> {{ crop.location }}</p>
-          <p><b>Season:</b> {{ crop.season }}</p>
-          <p><b>Weather:</b> {{ crop.weather }}</p>
-          <p>{{ crop.description }}</p>
-        </div>
-      {% endfor %}
+     <!-- Toast Notifications -->
+    <div id="toast-container">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="toast {{ category }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
     </div>
-  </main>
+    <!-- Navbar -->
+    {% include 'navbar.html' %}
 
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2025 AgriConnect | Empowering Farmers and Buyers</p>
-  </footer>
+    <!-- Page Content -->
+    <div class="page-container">
+  <h2 style="text-align:center; margin-top:1rem;">🌾 Crop Details</h2>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
+  <div class="products-container">
+    {% for crop in crops %}
+      <div class="product-card">
+        <img src="{{ url_for('static', filename=crop.image) }}" alt="{{ crop.name }}">
+        <h3>{{ crop.name }}</h3>
+        <p><strong>📍 Location:</strong> {{ crop.location }}</p>
+        <p><strong>🌦 Season:</strong> {{ crop.season }}</p>
+        <p><strong>☀ Weather:</strong> {{ crop.weather }}</p>
+        <p>{{ crop.description }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 AgriConnect | Empowering Farmers and Buyers</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
 </html>

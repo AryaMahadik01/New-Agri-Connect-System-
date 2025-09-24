@@ -473,3 +473,126 @@ products_col.insert_many([
 
 
 print("✅ Database seeded successfully with sample products!")
+
+# -------------------- Crops Collection --------------------
+db.crops.delete_many({})
+crops_data = [
+    {
+        "name": "Wheat",
+        "location": "Punjab, Haryana, UP",
+        "season": "Rabi",
+        "weather": "Cool and dry",
+        "description": "Staple crop of India, grown in winter season.",
+        "image": "images/seeds/wheat.png"
+    },
+    {
+        "name": "Rice",
+        "location": "West Bengal, Bihar, Tamil Nadu",
+        "season": "Kharif",
+        "weather": "Hot and humid",
+        "description": "Major staple crop, requires high water availability.",
+        "image": "images/seeds/rice.png"
+    },
+    {
+        "name": "Wheat",
+        "location": "Punjab, Haryana, UP",
+        "season": "Rabi",
+        "weather": "Cool and dry",
+        "description": "Staple crop of India, grown in winter season.",
+        "image": "images/seeds/wheat.png"
+    },
+    {
+        "name": "Rice",
+        "location": "West Bengal, Bihar, Tamil Nadu",
+        "season": "Kharif",
+        "weather": "Hot and humid",
+        "description": "Major staple crop, requires high water availability.",
+        "image": "images/seeds/rice.png"
+    }
+]
+
+
+db.crops.insert_many(crops_data)
+# -------------------- Government Schemes --------------------
+db.schemes.delete_many({})
+schemes_data = [
+    {
+        "name": "Pradhan Mantri Fasal Bima Yojana",
+        "description": "Crop insurance scheme for farmers’ protection.",
+        "link": "https://pmfby.gov.in/"
+    },
+    {
+        "name": "Kisan Credit Card",
+        "description": "Provides short-term credit to farmers.",
+        "link": "https://www.nabard.org/"
+    },
+    {
+        "name": "Pradhan Mantri Fasal Bima Yojana",
+        "description": "Crop insurance scheme for farmers’ protection.",
+        "link": "https://pmfby.gov.in/"
+    },
+    {
+        "name": "Kisan Credit Card",
+        "description": "Provides short-term credit to farmers.",
+        "link": "https://www.nabard.org/"
+    }
+]
+db.schemes.insert_many(schemes_data)
+
+# -------------------- News --------------------
+db.news.delete_many({})
+news_data = [
+    {
+        "title": "Monsoon boosts Kharif sowing",
+        "summary": "Good rainfall improves sowing of rice and pulses this year.",
+        "link": "https://agriculture.gov.in",
+        "date": "2025-09-15"
+    },
+    {
+        "title": "Govt announces subsidy on fertilizers",
+        "summary": "New subsidy rates to support farmers.",
+        "link": "https://pib.gov.in",
+        "date": "2025-09-10"
+    },
+    {
+        "title": "Monsoon boosts Kharif sowing",
+        "summary": "Good rainfall improves sowing of rice and pulses this year.",
+        "link": "https://agriculture.gov.in",
+        "date": "2025-09-15"
+    },
+    {
+        "title": "Govt announces subsidy on fertilizers",
+        "summary": "New subsidy rates to support farmers.",
+        "link": "https://pib.gov.in",
+        "date": "2025-09-10"
+    }
+]
+db.news.insert_many(news_data)
+
+# -------------------- Knowledge Hub --------------------
+db.knowledge.delete_many({})
+knowledge_data = [
+    {
+        "title": "Organic Farming Guide",
+        "content": "Learn how to start organic farming and improve soil health.",
+        "link": "https://agricoop.gov.in"
+    },
+    {
+        "title": "Agri-Business Startup Ideas",
+        "content": "Top 10 agribusiness ideas for young entrepreneurs.",
+        "link": "https://startupindia.gov.in"
+    },
+    {
+        "title": "Organic Farming Guide",
+        "content": "Learn how to start organic farming and improve soil health.",
+        "link": "https://agricoop.gov.in"
+    },
+    {
+        "title": "Agri-Business Startup Ideas",
+        "content": "Top 10 agribusiness ideas for young entrepreneurs.",
+        "link": "https://startupindia.gov.in"
+    }
+]
+db.knowledge.insert_many(knowledge_data)
+
+print("✅ Crops, Schemes, News, Knowledge data seeded successfully!")

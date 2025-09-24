@@ -1,16 +1,18 @@
+<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KnowledgeHub - AgriConnect</title>
+  <title>{% block title %}AgriConnect{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  
   <!-- Navbar -->
   {% include 'navbar.html' %}
 
-  <!-- Toast Notifications -->
+  <!-- 🌟 Toast Notifications -->
   <div id="toast-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -21,25 +23,18 @@
     {% endwith %}
   </div>
 
-  <h2 style="text-align:center; margin-top:1rem;">Knowledge Hub</h2>
-  <div class="page-container">
-  <div class="products-grid">
-    {% for item in knowledge %}
-      <div class="product-card">
-        <h3>{{ item.title }}</h3>
-        <p>{{ item.content }}</p>
-        <a href="{{ item.link }}" target="_blank" class="btn">Learn More</a>
-      </div>
-    {% endfor %}
-  </div>
-</div>
+  <!-- Main Content -->
+  <main>
+    {% block content %}
+    <!-- Page-specific content goes here -->
+    {% endblock %}
+  </main>
 
-
-    <!-- Footer -->
-<footer>
+  <!-- Footer -->
+  <footer>
     <p>&copy; 2025 AgriConnect | Empowering Farmers and Buyers</p>
-</footer>
+  </footer>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

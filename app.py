@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
+import datetime
 
 load_dotenv()
 
@@ -17,6 +18,12 @@ users_col = db["users"]
 products_col = db["products"]
 cart_col = db["cart"]
 wishlist_col = db["wishlist"]
+news_col = db["news"]
+knowledge_col = db["knowledge"]
+crops_col = db["crops"]
+schemes_col = db["schemes"]
+orders_col = db["orders"]
+
 
 @app.route("/")
 def home():
@@ -121,10 +128,30 @@ def add_to_cart(product_id):
     if "user" not in session:
         return redirect(url_for("login"))
 
-    if not cart_col.find_one({"user": session["user"], "product_id": product_id}):  # ✅ avoid duplicates
-        cart_col.insert_one({"user": session["user"], "product_id": product_id})
+    product = products_col.find_one({"_id": ObjectId(product_id)})
+    if not product:
+        flash("Product not found.", "error")
+        return redirect(url_for("products"))
 
+    existing_item = cart_col.find_one({"user": session["user"], "product_id": product_id})
+    if existing_item:
+        cart_col.update_one(
+            {"_id": existing_item["_id"]},
+            {"$inc": {"quantity": 1}}
+        )
+    else:
+        cart_col.insert_one({
+            "user": session["user"],  # email
+            "product_id": product_id,
+            "name": product["name"],
+            "price": product["price"],
+            "image": product["image"],
+            "quantity": 1
+        })
+
+    flash("✅ Added to cart!", "success")
     return redirect(url_for("view_cart"))
+
 
 @app.route("/remove-from-cart/<product_id>")
 def remove_from_cart(product_id):
@@ -189,23 +216,112 @@ def fertilizers():
 
 @app.route("/cropsdetails")
 def cropsdetails():
-    items = list(products_col.find({"category": "cropsdetails"}))
-    return render_template("cropsdetails.html")
+    items = list(crops_col.find())
+    return render_template("cropsdetails.html", crops=items)
 
 @app.route("/govschemes")
 def govschemes():
-    items = list(products_col.find({"category": "govschemes"}))
-    return render_template("govschemes.html")
+    items = list(schemes_col.find())
+    return render_template("govschemes.html", schemes=items)
 
 @app.route("/news")
 def news():
-    items = list(products_col.find({"category": "news"}))
-    return render_template("news.html")
+    items = list(news_col.find())
+    return render_template("news.html", news=items)
 
 @app.route("/knowledgehub")
 def knowledgehub():
-    items = list(products_col.find({"category": "knowledgehub"}))
-    return render_template("knowledgehub.html")
+    items = list(knowledge_col.find())
+    return render_template("knowledgehub.html", knowledge=items)
+
+@app.route("/checkout")
+def checkout():
+    if not session.get("user"):
+        flash("Please login to proceed with checkout.", "error")
+        return redirect(url_for("login"))
+
+    user = session["user"]
+    cart_items = list(cart_col.find({"user": user}))
+
+    if not cart_items:
+        flash("Your cart is empty!", "warning")
+        return redirect(url_for("products"))
+
+    subtotal = sum(item["price"] * item.get("quantity", 1) for item in cart_items)
+    tax = round(subtotal * 0.05, 2)
+    grandtotal = subtotal + tax
+
+    return render_template(
+        "checkout.html",
+        cart=cart_items,
+        subtotal=subtotal,
+        tax=tax,
+        grandtotal=grandtotal
+    )
+
+
+@app.route("/place_order", methods=["POST"])
+def place_order():
+    if not session.get("user"):
+        flash("Please login to place an order.", "error")
+        return redirect(url_for("login"))
+
+    user = session["user"]
+    payment_method = request.form.get("payment")
+    cart_items = list(cart_col.find({"user": user}))
+
+    if not cart_items:
+        flash("Cart is empty, cannot place order.", "error")
+        return redirect(url_for("products"))
+
+    subtotal = sum(item["price"] * item.get("quantity", 1) for item in cart_items)
+    tax = round(subtotal * 0.05, 2)
+    grandtotal = subtotal + tax
+
+    order = {
+        "user": user,
+        "items": cart_items,
+        "subtotal": subtotal,
+        "tax": tax,
+        "grandtotal": grandtotal,
+        "payment_method": payment_method,
+        "status": "Pending",
+        "created_at": datetime.datetime.now()
+    }
+
+    orders_col.insert_one(order)
+    cart_col.delete_many({"user": user})
+
+    flash("✅ Order placed successfully!", "success")
+    return redirect(url_for("home"))
+
+@app.route("/update-cart/<cart_id>/<action>")
+def update_cart(cart_id, action):
+    item = cart_col.find_one({"_id": ObjectId(cart_id)})
+    if not item:
+        flash("Item not found in cart.", "error")
+        return redirect(url_for("checkout"))
+
+    if action == "inc":
+        cart_col.update_one({"_id": item["_id"]}, {"$inc": {"quantity": 1}})
+    elif action == "dec" and item.get("quantity", 1) > 1:
+        cart_col.update_one({"_id": item["_id"]}, {"$inc": {"quantity": -1}})
+    else:
+        cart_col.delete_one({"_id": item["_id"]})
+
+    return redirect(url_for("checkout"))
+
+@app.route("/empty-cart")
+def empty_cart():
+    if "user" not in session:
+        flash("Please login first.", "error")
+        return redirect(url_for("login"))
+
+    cart_col.delete_many({"user": session["user"]})
+    flash("🗑 Your cart has been emptied.", "success")
+    return redirect(url_for("checkout"))
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

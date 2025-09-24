@@ -21,8 +21,21 @@
     {% endwith %}
   </div>
 
+  <h2 style="text-align:center; margin-top:1rem;">Government Schemes</h2>
 
-  <h2 class="page-title">Govt Schemes</h2>
+  <div class="page-container">
+  <div class="products-grid">
+    {% for scheme in schemes %}
+      <div class="product-card">
+        <h3>{{ scheme.name }}</h3>
+        <p>{{ scheme.description }}</p>
+        <a href="{{ scheme.link }}" target="_blank" class="btn">Visit Official Site</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+
     <!-- Footer -->
 <footer>
     <p>&copy; 2025 AgriConnect | Empowering Farmers and Buyers</p>

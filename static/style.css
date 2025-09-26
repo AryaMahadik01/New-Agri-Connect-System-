@@ -626,7 +626,7 @@ footer {
 }
 
 .qty-btn {
-  background: var(--secondary-green);
+  background: var(--light-green);
   color: white;
   border: none;
   padding: 0.5rem 0.9rem;

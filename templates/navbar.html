@@ -17,7 +17,7 @@
       <a href="{{ url_for('checkout') }}">Checkout</a>
 
       {% if session.get('role') == 'admin' %}
-        <!-- ✅ Admin is logged in -->
+        <!-- Admin is logged in -->
         <div class="nav-user-wrapper">
           <button id="navUserBtn" class="nav-user" aria-expanded="false">
             <span class="nav-avatar">A</span>
@@ -34,7 +34,7 @@
         </div>
 
       {% elif session.get('role') == 'user' %}
-        <!-- ✅ Regular User is logged in -->
+        <!-- Regular User is logged in -->
         <div class="nav-user-wrapper">
           <button id="navUserBtn" class="nav-user" aria-expanded="false">
             <span class="nav-avatar">{{ (session.get('name') or '')[:1]|upper }}</span>
@@ -51,7 +51,7 @@
         </div>
 
       {% else %}
-        <!-- ❌ Not logged in -->
+        <!-- Not logged in -->
         <a href="{{ url_for('login') }}">Login</a>
         <a href="{{ url_for('register') }}">Register</a>
       {% endif %}

@@ -2,7 +2,7 @@ from pymongo import MongoClient
 
 # Connect to MongoDB
 client = MongoClient("mongodb://localhost:27017/")
-db = client["agri_connect"]   # ✅ match with app.py
+db = client["agri_connect"]   #  match with app.py
 products_col = db["products"]
 
 # Clear existing products (optional, avoids duplicates when re-seeding)

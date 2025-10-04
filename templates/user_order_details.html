@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}Order Details - AgriConnect{% endblock %}
+{% block title %}My Order Details - AgriConnect{% endblock %}
 
 {% block content %}
-<h1 style="text-align:center; margin-top:1rem; color: var(--secondary-green);">Order Details</h1>
+<h1 style="text-align:center; margin-top:1rem; color: var(--secondary-green);">📦 Order Details</h1>
 
 <div style="max-width: 900px; margin: auto; margin-top:1.5rem;">
 
   <!-- Order Summary Card -->
   <div class="product-card" style="background: #f0fdf4; border: 2px solid var(--primary-green);">
-    <p><strong>Date:</strong> {{ order.date }}</p>
+    <p><strong>Order ID:</strong> {{ order._id }}</p>
     <p><strong>Status:</strong> 
       <span style="color: {{ '#f39c12' if order.status == 'Pending' else '#2ecc71' if order.status == 'Completed' else '#e74c3c' }}; font-weight:bold;">
         {{ order.status }}
@@ -17,20 +17,33 @@
     </p>
     <p><strong>Payment Method:</strong> {{ order.payment_method | upper }}</p>
     <p><strong>Grand Total:</strong> ₹{{ order.grandtotal }}</p>
+    <p><strong>Date:</strong> {{ order.date }}</p>
   </div>
 
-  <!-- Shipping Details -->
-  <h2 style="margin-top:2rem; color: var(--primary-green); text-align:center;">Shipping Details</h2>
-  <div class="product-card" style="background: #fff8e1; border: 2px solid var(--accent-orange);">
-    <p><strong>Name:</strong> {{ order.shipping.name }}</p>
-    <p><strong>Address:</strong> {{ order.shipping.address }}, {{ order.shipping.city }} - {{ order.shipping.pincode }}</p>
-    <p><strong>Phone:</strong> {{ order.shipping.phone }}</p>
+  <!-- 🚚 Shipping Tracker -->
+  <h2 style="margin-top:2rem; text-align:center; color: var(--primary-green);">🚚 Shipping Progress</h2>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin:2rem 0; position:relative;">
+    
+    <div style="flex:1; text-align:center;">
+      <div style="width:30px; height:30px; border-radius:50%; background: {{ 'var(--primary-green)' if order.shipping_status in ['Pending','Shipped','Delivered'] else '#ccc' }}; margin:auto;"></div>
+      <p>Pending</p>
+    </div>
+
+    <div style="flex:1; text-align:center; position:relative;">
+      <div style="width:30px; height:30px; border-radius:50%; background: {{ 'var(--primary-green)' if order.shipping_status in ['Shipped','Delivered'] else '#ccc' }}; margin:auto;"></div>
+      <p>Shipped</p>
+    </div>
+
+    <div style="flex:1; text-align:center;">
+      <div style="width:30px; height:30px; border-radius:50%; background: {{ 'var(--primary-green)' if order.shipping_status == 'Delivered' else '#ccc' }}; margin:auto;"></div>
+      <p>Delivered</p>
+    </div>
   </div>
 
-  <!-- Items in the Order -->
-  <h2 style="margin-top:2rem; color: var(--primary-green); text-align:center;">Items in this Order</h2>
+  <!-- Order Items -->
+  <h2 style="margin-top:2rem; color: var(--primary-green); text-align:center;">🛍 Items in this Order</h2>
   <div class="products-container">
-    {% for item in order.items %}
+    {% for item in order["items"] %}
       <div class="product-card">
         {% if item.image %}
           <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
@@ -42,13 +55,13 @@
         <p>Quantity: {{ item.quantity }}</p>
         <p><strong>Total: ₹{{ item.price * item.quantity }}</strong></p>
       </div>
+    {% else %}
+      <p style="text-align:center; margin-top:2rem;">No items found in this order.</p>
     {% endfor %}
   </div>
 
-  <!-- Back Button -->
   <div style="text-align:center; margin-top:2rem;">
     <a class="btn" href="{{ url_for('my_orders') }}">⬅ Back to My Orders</a>
   </div>
-
 </div>
 {% endblock %}

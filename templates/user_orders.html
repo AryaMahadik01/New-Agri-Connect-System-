@@ -2,44 +2,64 @@
 {% block title %}My Orders - AgriConnect{% endblock %}
 
 {% block content %}
-<h1 style="text-align:center; margin-top:1rem; color: var(--secondary-green);">My Orders</h1>
+<h1 style="text-align:center; margin:1rem; color: var(--secondary-green);">My Orders</h1>
 
-<div style="max-width:1000px; margin:auto; margin-top:2rem;">
-  {% if orders %}
-    <table style="width:100%; border-collapse:collapse; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-      <thead style="background:var(--primary-green); color:white;">
-        <tr>
-          <th style="padding:10px;">Date</th>
-          <th style="padding:10px;">Items</th>
-          <th style="padding:10px;">Total</th>
-          <th style="padding:10px;">Status</th>
-          <th style="padding:10px;">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for order in orders %}
-        <tr>
-          <td style="padding:10px; text-align:center;">{{ order.date }}</td>
-          <td style="padding:10px;">
-            <ul>
-              {% for item in order.items %}
-                <li>{{ item.name }} (x{{ item.quantity }})</li>
-              {% endfor %}
-            </ul>
-          </td>
-          <td style="padding:10px; text-align:center;">₹{{ order.grandtotal }}</td>
-          <td style="padding:10px; text-align:center;">{{ order.status }}</td>
-          <td style="padding:10px; text-align:center;">
-            <a class="btn" href="{{ url_for('user_order_details', order_id=order._id) }}">Details</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <a class="btn" href="{{ url_for('user_order_details', order_id=order._id) }}">Details</a>
+<div style="max-width: 1000px; margin:auto;">
+  {% for order in orders %}
+    <div class="product-card" style="margin-bottom:1.5rem; padding:1.5rem;">
+      <h3>📅 {{ order.date }}</h3>
+      <p><strong>Payment:</strong> {{ order.payment_method|upper }}</p>
+      <p><strong>Total:</strong> ₹{{ order.grandtotal }}</p>
 
+      <!-- 🚚 Shipping Status Tracker -->
+      <div class="status-tracker">
+        <div class="step {% if order.shipping_status in ['Pending','Shipped','Delivered'] %}active{% endif %}">Pending</div>
+        <div class="line {% if order.shipping_status in ['Shipped','Delivered'] %}active{% endif %}"></div>
+        <div class="step {% if order.shipping_status in ['Shipped','Delivered'] %}active{% endif %}">Shipped</div>
+        <div class="line {% if order.shipping_status == 'Delivered' %}active{% endif %}"></div>
+        <div class="step {% if order.shipping_status == 'Delivered' %}active{% endif %}">Delivered</div>
+      </div>
+
+      <!-- View details -->
+      <div style="margin-top:1rem; text-align:right;">
+        <a href="{{ url_for('user_order_details', order_id=order._id) }}" class="btn">🔍 View Details</a>
+      </div>
+    </div>
   {% else %}
-    <p style="text-align:center; margin-top:2rem;">You have not placed any orders yet.</p>
-  {% endif %}
+    <p style="text-align:center; margin-top:2rem;">You have no orders yet.</p>
+  {% endfor %}
 </div>
+
+<style>
+.status-tracker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+.status-tracker .step {
+  flex: 0 0 auto;
+  text-align: center;
+  font-weight: bold;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  background: #eee;
+  color: #666;
+  min-width: 90px;
+}
+.status-tracker .step.active {
+  background: var(--primary-green);
+  color: white;
+}
+.status-tracker .line {
+  flex: 1;
+  height: 4px;
+  background: #ddd;
+  margin: 0 5px;
+  border-radius: 2px;
+}
+.status-tracker .line.active {
+  background: var(--primary-green);
+}
+</style>
 {% endblock %}

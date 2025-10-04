@@ -374,7 +374,23 @@ def payment_success():
     flash("Payment successful and order confirmed!", "success")
     return jsonify({"status": "success"})
 
+@app.route("/admin/update_shipping/<order_id>/<status>")
+def update_shipping(order_id, status):
+    if "user" not in session or session.get("role") != "admin":
+        flash("Access denied!", "error")
+        return redirect(url_for("home"))
 
+    if status not in ["Pending", "Shipped", "Delivered"]:
+        flash("Invalid status", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    orders_col.update_one(
+        {"_id": ObjectId(order_id)},
+        {"$set": {"shipping_status": status}}
+    )
+
+    flash(f"Order marked as {status}", "success")
+    return redirect(url_for("admin_dashboard"))
 
 
 @app.route("/update-cart/<cart_id>/<action>")
@@ -445,7 +461,6 @@ def my_orders():
     orders = list(db.orders.find({"user_email": session.get("email")}))
     return render_template("user_orders.html", orders=orders)
 
-from bson import ObjectId
 
 @app.route("/my-orders/<order_id>")
 def user_order_details(order_id):

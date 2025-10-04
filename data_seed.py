@@ -19,7 +19,7 @@ products_col.insert_many([
     },
     {
         "name": "CALENDULA DOUBLE MIX SEEDS",
-        "price": 249,
+        "price": 5,
         "description": "IRIS HYBRID FLOWER CALENDULA DOUBLE MIX SEEDS",
         "image": "images/seeds/fseed2.png",
         "category": "seeds"

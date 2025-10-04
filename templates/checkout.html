@@ -33,11 +33,11 @@
 <div class="checkout-payment">
   <h2>💳 Payment Method</h2>
   <form method="POST" action="{{ url_for('place_order') }}">
-    <label><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label><br>
-    <label><input type="radio" name="payment" value="upi"> UPI (Google Pay, PhonePe, etc.)</label><br>
-    <label><input type="radio" name="payment" value="card"> Debit / Credit Card</label><br>
+  <label><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label><br>
+  <label><input type="radio" name="payment" value="upi"> UPI</label><br>
+  <label><input type="radio" name="payment" value="card"> Card</label><br>
+  <button type="submit" class="btn">✅ Place Order</button>
+</form>
 
-    <button type="submit" class="btn">✅ Place Order</button>
-  </form>
 </div>
 {% endblock %}

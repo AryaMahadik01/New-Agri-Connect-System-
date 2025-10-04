@@ -1,15 +1,24 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
-import datetime
+from datetime import datetime
+import razorpay
+
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "defaultsecret")
+
+
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+
+razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
 
 # MongoDB connection
 client = MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017/"))
@@ -133,41 +142,48 @@ def products():
     items = list(products_col.find())
     return render_template("products.html", products=items)
 
-@app.route("/add-to-cart/<product_id>")
+@app.route("/add_to_cart/<product_id>")
 def add_to_cart(product_id):
-    if "user" not in session:
+    if not session.get("user"):
+        flash("Please login to add items to cart.", "error")
         return redirect(url_for("login"))
 
-    product = products_col.find_one({"_id": ObjectId(product_id)})
+    user_email = session.get("email")
+    print("SESSION EMAIL IN CART:", user_email)  # ✅ debug
+
+    product = db.products.find_one({"_id": ObjectId(product_id)})
     if not product:
-        flash("Product not found.", "error")
+        flash("Product not found!", "error")
         return redirect(url_for("products"))
 
-    existing_item = cart_col.find_one({"user": session["user"], "product_id": product_id})
-    if existing_item:
-        cart_col.update_one(
-            {"_id": existing_item["_id"]},
-            {"$inc": {"quantity": 1}}
-        )
+    existing = db.cart.find_one({"product_id": product_id, "user_email": user_email})
+    if existing:
+        db.cart.update_one({"_id": existing["_id"]}, {"$inc": {"quantity": 1}})
+        print("UPDATED CART ITEM:", existing)  # ✅ debug
     else:
-        cart_col.insert_one({
-            "user": session["user"],  # email
+        cart_doc = {
             "product_id": product_id,
             "name": product["name"],
             "price": product["price"],
-            "image": product["image"],
-            "quantity": 1
-        })
+            "image": product.get("image", "images/placeholder.png"),
+            "quantity": 1,
+            "user_email": user_email   # ✅ important
+        }
+        db.cart.insert_one(cart_doc)
+        print("INSERTED CART ITEM:", cart_doc)  # ✅ debug
 
-    flash("✅ Added to cart!", "success")
+    flash("Product added to cart.", "success")
     return redirect(url_for("view_cart"))
+
+
 
 
 @app.route("/remove-from-cart/<product_id>")
 def remove_from_cart(product_id):
     if "user" in session:
-        cart_col.delete_one({"user": session["user"], "product_id": product_id})
+        cart_col.delete_one({"product_id": product_id, "user_email": session["email"]})
     return redirect(url_for("view_cart"))
+
 
 @app.route("/add-to-wishlist/<product_id>")
 def add_to_wishlist(product_id):
@@ -185,14 +201,24 @@ def remove_from_wishlist(product_id):
         wishlist_col.delete_one({"user": session["user"], "product_id": product_id})
     return redirect(url_for("view_wishlist"))
 
-@app.route("/cart")
+@app.route("/view_cart")
 def view_cart():
     if "user" not in session:
         return redirect(url_for("login"))
 
-    cart_items = list(cart_col.find({"user": session["user"]}))
-    products = [products_col.find_one({"_id": ObjectId(item["product_id"])}) for item in cart_items]
+    user_email = session.get("email")
+    cart_items = list(cart_col.find({"user_email": user_email}))
+
+    products = []
+    for item in cart_items:
+        product = products_col.find_one({"_id": ObjectId(item["product_id"])})
+        if product:
+            product["quantity"] = item["quantity"]
+            product["cart_id"] = str(item["_id"])
+            products.append(product)
+
     return render_template("cart.html", products=products)
+
 
 @app.route("/wishlist")
 def view_wishlist():
@@ -247,63 +273,109 @@ def knowledgehub():
 @app.route("/checkout")
 def checkout():
     if not session.get("user"):
-        flash("Please login to proceed with checkout.", "error")
+        flash("Please login first.", "error")
         return redirect(url_for("login"))
 
-    user = session["user"]
-    cart_items = list(cart_col.find({"user": user}))
+    user_email = session.get("email")
+    cart_items = list(db.cart.find({"user_email": user_email}))
 
     if not cart_items:
-        flash("Your cart is empty!", "warning")
-        return redirect(url_for("products"))
+        flash("Your cart is empty!", "error")
+        return redirect(url_for("view_cart"))
 
-    subtotal = sum(item["price"] * item.get("quantity", 1) for item in cart_items)
-    tax = round(subtotal * 0.05, 2)
+    # Totals
+    subtotal = sum(item["price"] * item["quantity"] for item in cart_items)
+    tax = round(0.05 * subtotal, 2)
     grandtotal = subtotal + tax
 
-    return render_template(
-        "checkout.html",
-        cart=cart_items,
-        subtotal=subtotal,
-        tax=tax,
-        grandtotal=grandtotal
-    )
+    return render_template("checkout.html",
+                           cart=cart_items,
+                           subtotal=subtotal,
+                           tax=tax,
+                           grandtotal=grandtotal)
 
 
 @app.route("/place_order", methods=["POST"])
 def place_order():
     if not session.get("user"):
-        flash("Please login to place an order.", "error")
+        flash("Please login to place order.", "error")
         return redirect(url_for("login"))
 
-    user = session["user"]
     payment_method = request.form.get("payment")
-    cart_items = list(cart_col.find({"user": user}))
+    user_email = session.get("email")
 
+    cart_items = list(db.cart.find({"user_email": user_email}))
     if not cart_items:
-        flash("Cart is empty, cannot place order.", "error")
-        return redirect(url_for("products"))
+        flash("Your cart is empty!", "error")
+        return redirect(url_for("view_cart"))
 
-    subtotal = sum(item["price"] * item.get("quantity", 1) for item in cart_items)
-    tax = round(subtotal * 0.05, 2)
-    grandtotal = subtotal + tax
+    # Calculate totals
+    subtotal = sum(item["price"] * item["quantity"] for item in cart_items)
+    tax = round(0.05 * subtotal, 2)
+    grand_total = subtotal + tax
 
-    order = {
-        "user": user,
-        "items": cart_items,
-        "subtotal": subtotal,
-        "tax": tax,
-        "grandtotal": grandtotal,
-        "payment_method": payment_method,
-        "status": "Pending",
-        "created_at": datetime.datetime.now()
-    }
+    if payment_method in ["upi", "card"]:
+        # ✅ Create Razorpay Order
+        razorpay_order = razorpay_client.order.create({
+            "amount": grand_total * 100,  # amount in paise
+            "currency": "INR",
+            "payment_capture": 1
+        })
 
-    orders_col.insert_one(order)
-    cart_col.delete_many({"user": user})
+        # Save order with "Pending Payment" status
+        order = {
+            "user_email": user_email,
+            "user": session.get("name"),
+            "items": cart_items,
+            "grandtotal": grand_total,
+            "payment_method": payment_method,
+            "status": "Pending Payment",
+            "razorpay_order_id": razorpay_order["id"],
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    flash("✅ Order placed successfully!", "success")
-    return redirect(url_for("home"))
+        }
+        db.orders.insert_one(order)
+
+        return render_template("razorpay_checkout.html", 
+                       razorpay_order=razorpay_order,
+                       grandtotal=grand_total,
+                       user_email=user_email,
+                       key_id=RAZORPAY_KEY_ID)   # frontend needs key
+
+    else:
+        # ✅ COD Orders (No Razorpay)
+        order = {
+            "user_email": user_email,
+            "user": session.get("name"),
+            "items": cart_items,
+            "grandtotal": grand_total,
+            "payment_method": "cod",
+            "status": "Pending",
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        db.orders.insert_one(order)
+        db.cart.delete_many({"user_email": user_email})
+        flash("Order placed successfully with Cash on Delivery!", "success")
+        return redirect(url_for("my_orders"))
+    
+@app.route("/payment-success", methods=["POST"])
+def payment_success():
+    data = request.json
+    razorpay_order_id = data.get("razorpay_order_id")
+
+    db.orders.update_one(
+        {"razorpay_order_id": razorpay_order_id},
+        {"$set": {"status": "Completed"}}
+    )
+
+    # Clear cart
+    db.cart.delete_many({"user_email": session.get("email")})
+
+    flash("Payment successful and order confirmed!", "success")
+    return jsonify({"status": "success"})
+
+
+
 
 @app.route("/update-cart/<cart_id>/<action>")
 def update_cart(cart_id, action):
@@ -327,9 +399,10 @@ def empty_cart():
         flash("Please login first.", "error")
         return redirect(url_for("login"))
 
-    cart_col.delete_many({"user": session["user"]})
+    cart_col.delete_many({"user_email": session["email"]})
     flash("🗑 Your cart has been emptied.", "success")
     return redirect(url_for("checkout"))
+
 
 
 @app.route("/admin/order/<order_id>")
@@ -363,7 +436,40 @@ def approve_order(order_id):
 
     return redirect(url_for("admin_dashboard"))
 
+@app.route("/my_orders")
+def my_orders():
+    if not session.get("user"):
+        flash("Please login to view your orders.", "error")
+        return redirect(url_for("login"))
 
+    orders = list(db.orders.find({"user_email": session.get("email")}))
+    return render_template("user_orders.html", orders=orders)
+
+from bson import ObjectId
+
+@app.route("/my-orders/<order_id>")
+def user_order_details(order_id):
+    if not session.get("user"):
+        flash("Please login to view order details.", "error")
+        return redirect(url_for("login"))
+
+    order = db.orders.find_one({"_id": ObjectId(order_id), "user_email": session.get("email")})
+    if not order:
+        flash("Order not found.", "error")
+        return redirect(url_for("my_orders"))
+
+    return render_template("user_order_details.html", order=order)
+
+
+@app.route("/debug_cart")
+def debug_cart():
+    user_email = session.get("email")
+    items = list(db.cart.find({"user_email": user_email}))
+    print("DEBUG CART:", items)   # log in terminal
+    return {"cart_items": str(items)}
+
+
+# print(list(db.orders.find()))
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

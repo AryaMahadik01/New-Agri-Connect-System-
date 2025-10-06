@@ -14,7 +14,8 @@
       <label for="password">Password</label>
       <input type="password" name="password" placeholder="Enter your password" required>
 
-      <button type="submit" class="btn auth-btn">Login</button>
+      <button type="submit" class="btn auth-btn">Login</button> 
+      <a href="{{ url_for('register') }}">Forgot Password?</a>
     </form>
     <p class="auth-footer">
       Don’t have an account? <a href="{{ url_for('register') }}">Register here</a>

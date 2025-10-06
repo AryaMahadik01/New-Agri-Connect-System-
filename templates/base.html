@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}AgriConnect{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body>
   
@@ -31,9 +33,66 @@
   </main>
 
   <!-- Footer -->
-  <footer>
-    <p>&copy; 2025 AgriConnect | Empowering Farmers and Buyers</p>
-  </footer>
+<footer>
+  <footer class="footer">
+  <div class="footer-container">
+
+    <!-- 🌿 About Section -->
+    <div class="footer-col">
+      <h3>About AgriConnect</h3>
+      <p>
+        AgriConnect is your trusted marketplace for agricultural products — 
+        connecting farmers, suppliers, and buyers across India. 
+        We provide top-quality seeds, fertilizers, tools, and pesticides 
+        to help farmers grow better and smarter.
+      </p>
+    </div>
+
+    <!-- 🔗 Quick Links -->
+    <div class="footer-col">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('products') }}">Shop</a></li>
+        <li><a href="{{ url_for('news') }}">Agri News</a></li>
+        <li><a href="{{ url_for('knowledgehub') }}">Knowledge Hub</a></li>
+        <li><a href="{{ url_for('govschemes') }}">Govt. Schemes</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+
+    <!-- 📞 Contact Info -->
+    <div class="footer-col">
+      <h3>Contact Us</h3>
+      <p><strong>📍 Address:</strong> Pune, Maharashtra, India</p>
+      <p><strong>📞 Phone:</strong> +91 98765 43210</p>
+      <p><strong>📧 Email:</strong> support@agriconnect.in</p>
+      <p><strong>🕒 Hours:</strong> Mon–Sat: 9am–7pm</p>
+    </div>
+
+    <!-- 🌍 Social Media -->
+    <div class="footer-col">
+      <h3>Follow Us</h3>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+
+      <form class="newsletter">
+        <label for="subscribe">Subscribe for updates:</label>
+        <input type="email" id="subscribe" placeholder="Enter your email" required>
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2025 AgriConnect. All Rights Reserved. 🌱 Built with ❤️ for Indian Farmers.</p>
+  </div>
+</footer>
 
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

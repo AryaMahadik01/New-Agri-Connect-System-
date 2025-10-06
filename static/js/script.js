@@ -60,3 +60,27 @@ function updateQuantity(productId, change) {
   // TODO: Optionally send AJAX request to backend to update DB
 }
 
+// 🌟 Customer Review Slider
+document.addEventListener("DOMContentLoaded", function () {
+  const slider = document.querySelector(".review-slider");
+  const nextBtn = document.querySelector(".next-btn");
+  const prevBtn = document.querySelector(".prev-btn");
+
+  if (slider && nextBtn && prevBtn) {
+    let scrollAmount = 0;
+    const slideWidth = 340; // width + gap
+
+    nextBtn.addEventListener("click", () => {
+      slider.scrollBy({ left: slideWidth, behavior: "smooth" });
+    });
+
+    prevBtn.addEventListener("click", () => {
+      slider.scrollBy({ left: -slideWidth, behavior: "smooth" });
+    });
+
+    // Auto slide
+    setInterval(() => {
+      slider.scrollBy({ left: slideWidth, behavior: "smooth" });
+    }, 3000);
+  }
+});

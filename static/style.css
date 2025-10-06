@@ -946,3 +946,15 @@ form button:hover {
 
 .prev-btn { left: 20px; }
 .next-btn { right: 20px; }
+
+.forgot-link {
+  display: block;
+  text-align: right;
+  margin: 0.3rem 0 1rem 0;
+  font-size: 0.9rem;
+  color: var(--primary-green);
+  text-decoration: none;
+}
+.forgot-link:hover {
+  text-decoration: underline;
+}

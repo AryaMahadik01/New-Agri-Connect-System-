@@ -6,12 +6,31 @@ from dotenv import load_dotenv
 from bson.objectid import ObjectId
 from datetime import datetime
 import razorpay
+from itsdangerous import URLSafeTimedSerializer
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from flask_mail import Mail, Message
 
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "defaultsecret")
+
+
+app.config.update(
+    MAIL_SERVER=os.getenv("MAIL_SERVER"),
+    MAIL_PORT=int(os.getenv("MAIL_PORT", 587)),
+    MAIL_USE_TLS=os.getenv("MAIL_USE_TLS", "True") == "True",
+    MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
+    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD")
+)
+
+mail = Mail(app)
+
+# Token serializer
+s = URLSafeTimedSerializer(app.secret_key)
 
 
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
@@ -309,20 +328,29 @@ def place_order():
         flash("Your cart is empty!", "error")
         return redirect(url_for("view_cart"))
 
-    # Calculate totals
+    # 🧮 Calculate totals
     subtotal = sum(item["price"] * item["quantity"] for item in cart_items)
     tax = round(0.05 * subtotal, 2)
     grand_total = subtotal + tax
 
+    # 🚚 Shipping Info
+    shipping_info = {
+        "full_name": request.form.get("full_name"),
+        "phone": request.form.get("phone"),
+        "address": request.form.get("address"),
+        "city": request.form.get("city"),
+        "state": request.form.get("state"),
+        "pincode": request.form.get("pincode")
+    }
+
     if payment_method in ["upi", "card"]:
-        # ✅ Create Razorpay Order
+        # ✅ Razorpay order creation
         razorpay_order = razorpay_client.order.create({
-            "amount": grand_total * 100,  # amount in paise
+            "amount": int(grand_total * 100),
             "currency": "INR",
             "payment_capture": 1
         })
 
-        # Save order with "Pending Payment" status
         order = {
             "user_email": user_email,
             "user": session.get("name"),
@@ -331,19 +359,24 @@ def place_order():
             "payment_method": payment_method,
             "status": "Pending Payment",
             "razorpay_order_id": razorpay_order["id"],
+            "shipping_info": shipping_info,
+            "shipping_status": "Pending",
             "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
         }
+
         db.orders.insert_one(order)
 
-        return render_template("razorpay_checkout.html", 
-                       razorpay_order=razorpay_order,
-                       grandtotal=grand_total,
-                       user_email=user_email,
-                       key_id=RAZORPAY_KEY_ID)   # frontend needs key
+        return render_template(
+            "razorpay_checkout.html",
+            razorpay_order=razorpay_order,
+            grandtotal=grand_total,
+            user_email=user_email,
+            order=order,
+            key_id=RAZORPAY_KEY_ID
+        )
 
     else:
-        # ✅ COD Orders (No Razorpay)
+        # ✅ COD flow
         order = {
             "user_email": user_email,
             "user": session.get("name"),
@@ -351,6 +384,8 @@ def place_order():
             "grandtotal": grand_total,
             "payment_method": "cod",
             "status": "Pending",
+            "shipping_info": shipping_info,
+            "shipping_status": "Pending",
             "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         db.orders.insert_one(order)
@@ -484,7 +519,90 @@ def debug_cart():
     return {"cart_items": str(items)}
 
 
-# print(list(db.orders.find()))
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form["email"].strip()
+        user = users_col.find_one({"email": email})
+
+        if not user:
+            flash("No account found with that email.", "error")
+            return redirect(url_for("forgot_password"))
+
+        # Generate token valid for 30 minutes
+        token = s.dumps(email, salt="password-reset")
+        reset_link = url_for("reset_password", token=token, _external=True)
+
+        # Send email
+        if send_reset_email(email, reset_link):
+            flash("✅ Password reset link sent to your email!", "success")
+        else:
+            flash("❌ Could not send email. Please try again.", "error")
+
+        return redirect(url_for("login"))
+
+    return render_template("forgot_password.html")
+
+
+# -----------------------------
+# RESET PASSWORD
+# -----------------------------
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt="password-reset", max_age=1800)  # 30 min
+    except:
+        flash("The reset link is invalid or expired.", "error")
+        return redirect(url_for("forgot_password"))
+
+    if request.method == "POST":
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+
+        if password != confirm_password:
+            flash("Passwords do not match!", "error")
+            return redirect(url_for("reset_password", token=token))
+
+        hashed_pw = generate_password_hash(password)
+        users_col.update_one({"email": email}, {"$set": {"password": hashed_pw}})
+
+        flash("Password reset successful! Please log in.", "success")
+        return redirect(url_for("login"))
+
+    return render_template("reset_password.html", token=token)
+
+def send_reset_email(to_email, reset_link):
+    """Send password reset email using Flask-Mail"""
+    try:
+        msg = Message(
+            subject="AgriConnect Password Reset",
+            sender=os.getenv("MAIL_USERNAME"),
+            recipients=[to_email],
+        )
+        msg.html = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; background-color:#f9fff9; padding:20px;">
+            <div style="max-width:600px; margin:auto; background:#fff; border-radius:8px; padding:20px; border:1px solid #dfe6e9;">
+              <h2 style="color:#27ae60;">🌱 AgriConnect Password Reset</h2>
+              <p>Hello,</p>
+              <p>We received a request to reset your password.</p>
+              <p>
+                <a href="{reset_link}" style="background:#27ae60; color:white; padding:10px 15px; text-decoration:none; border-radius:5px;">Reset Password</a>
+              </p>
+              <p>This link will expire in 30 minutes.</p>
+              <hr>
+              <p>If you didn’t request this, please ignore this email.</p>
+              <p style="color:#95a5a6;">– AgriConnect Team</p>
+            </div>
+          </body>
+        </html>
+        """
+        mail.send(msg)
+        print(f"✅ Email sent to {to_email}")
+        return True
+    except Exception as e:
+        print("❌ Failed to send email:", e)
+        return False
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

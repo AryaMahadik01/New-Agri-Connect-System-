@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
-
 {% block title %}Checkout - AgriConnect{% endblock %}
 
 {% block content %}
-<h1 class="page-title" style="text-align:center; margin-top:1rem;">🛒 Checkout</h1>
+<h1 class="page-title" style="text-align: center; margin-top: 1rem">🛒 Checkout</h1>
 
-<div class="products-container">
-  {% for item in cart %}
+<form method="POST" action="{{ url_for('place_order') }}" style="max-width: 800px; margin: auto;">
+  <!-- 🧾 Cart Summary -->
+  <div class="products-container">
+    {% for item in cart %}
     <div class="product-card">
-      <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+      <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}" />
       <h3>{{ item.name }}</h3>
       <p>Price: ₹{{ item.price }}</p>
 
@@ -20,24 +21,49 @@
 
       <p><strong>Total:</strong> ₹{{ item.price * item.quantity }}</p>
     </div>
-  {% endfor %}
-</div>
+    {% endfor %}
+  </div>
 
-<div class="checkout-summary">
-  <h2>🧾 Bill Summary</h2>
-  <p>Subtotal: ₹{{ subtotal }}</p>
-  <p>Tax (5%): ₹{{ tax }}</p>
-  <p><strong>Grand Total: ₹{{ grandtotal }}</strong></p>
-</div>
+  <!-- 💳 Bill Summary -->
+  <div class="checkout-summary">
+    <h2>🧾 Bill Summary</h2>
+    <p>Subtotal: ₹{{ subtotal }}</p>
+    <p>Tax (5%): ₹{{ tax }}</p>
+    <p><strong>Grand Total: ₹{{ grandtotal }}</strong></p>
+  </div>
 
-<div class="checkout-payment">
-  <h2>💳 Payment Method</h2>
-  <form method="POST" action="{{ url_for('place_order') }}">
-  <label><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label><br>
-  <label><input type="radio" name="payment" value="upi"> UPI</label><br>
-  <label><input type="radio" name="payment" value="card"> Card</label><br>
-  <button type="submit" class="btn">✅ Place Order</button>
+  <!-- 🚚 Shipping Details -->
+  <div class="auth-box">
+    <h2>Shipping Details</h2>
+    <label>Full Name</label>
+    <input type="text" name="full_name" required />
+
+    <label>Phone</label>
+    <input type="text" name="phone" required />
+
+    <label>Address</label>
+    <textarea name="address" required></textarea>
+
+    <label>City</label>
+    <input type="text" name="city" required />
+
+    <label>State</label>
+    <input type="text" name="state" required />
+
+    <label>Pincode</label>
+    <input type="text" name="pincode" required />
+  </div>
+
+  <!-- 💰 Payment Method -->
+  <div class="checkout-payment">
+    <h2>💳 Payment Method</h2>
+    <label><input type="radio" name="payment" value="cod" checked /> Cash on Delivery</label><br>
+    <label><input type="radio" name="payment" value="upi" /> UPI</label><br>
+    <label><input type="radio" name="payment" value="card" /> Card</label><br>
+  </div>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <button type="submit" class="btn">✅ Place Order</button>
+  </div>
 </form>
-
-</div>
 {% endblock %}

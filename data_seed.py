@@ -19,14 +19,14 @@ products_col.insert_many([
     },
     {
         "name": "CALENDULA DOUBLE MIX SEEDS",
-        "price": 5,
+        "price": 1,
         "description": "IRIS HYBRID FLOWER CALENDULA DOUBLE MIX SEEDS",
         "image": "images/seeds/fseed2.png",
         "category": "seeds"
     },
     {
         "name": "BALSAM SEEDS",
-        "price": 149,
+        "price": 2,
         "description": "IRIS HYBRID FLOWER BALSAM SEEDS",
         "image": "images/seeds/fseed3.png",
         "category": "seeds"

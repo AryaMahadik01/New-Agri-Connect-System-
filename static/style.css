@@ -307,14 +307,6 @@ form button:hover {
 }
 
 /* === Footer === */
-/* footer {
-  background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
-  color: var(--white);
-  padding: 1.5rem;
-  text-align: center;
-  margin-top: 3rem;
-} */
-/* 🌿 Modern Footer */
 .footer {
   background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
   color: white;
@@ -708,7 +700,9 @@ form button:hover {
 }
 
 /* Checkout Page */
-.checkout-summary, .checkout-payment {
+.checkout-summary, 
+.checkout-payment, 
+.checkout-shipping{
   background: var(--white);
   padding: 2rem;
   border-radius: 12px;
@@ -716,12 +710,20 @@ form button:hover {
   max-width: 600px;
   margin: 2rem auto;
 }
-
 .checkout-summary h2,
-.checkout-payment h2 {
+.checkout-payment h2,
+.checkout-shipping h2{
   color: var(--secondary-green);
   margin-bottom: 1rem;
   text-align: center;
+}
+
+.checkout-summary,
+.checkout-payment,
+.checkout-shipping {
+  color: var(--dark-gray);
+  margin-bottom: 1rem;
+  text-align: left;
 }
 
 .quantity-control {
@@ -957,4 +959,87 @@ form button:hover {
 }
 .forgot-link:hover {
   text-decoration: underline;
+}
+
+/* 🌾 Premium Search Bar */
+.search-container {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0;
+}
+
+.search-form {
+  width: 100%;
+  max-width: 700px;
+  position: relative;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 30px;
+  padding: 0 16px;
+  height: 50px;
+  border: 2px solid var(--primary-green);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding-left: 8px;
+  background-color: transparent;
+  color: #333;
+}
+
+.search-icon {
+  font-size: 18px;
+  color: var(--primary-green);
+}
+
+.search-btn {
+  background: var(--secondary-green);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.search-btn:hover {
+  background: var(--accent-orange);
+  transform: scale(1.05);
+}
+
+/* 💡 Suggestions Dropdown */
+.suggestions {
+  position: absolute;
+  top: 58px;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: none;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.suggest-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.suggest-item:hover {
+  background-color: #e8f5e9;
+  color: var(--primary-green);
 }

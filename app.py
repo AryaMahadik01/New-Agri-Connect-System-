@@ -156,10 +156,38 @@ def logout():
     flash("You have been logged out successfully.", "success")
     return redirect(url_for("login"))
 
+# @app.route("/products")
+# def products():
+#     items = list(products_col.find())
+#     return render_template("products.html", products=items)
 @app.route("/products")
 def products():
-    items = list(products_col.find())
-    return render_template("products.html", products=items)
+    query = request.args.get("q", "").strip().lower()
+
+    if query:
+        # Search products by name or description (case-insensitive)
+        items = list(products_col.find({
+            "$or": [
+                {"name": {"$regex": query, "$options": "i"}},
+                {"description": {"$regex": query, "$options": "i"}}
+            ]
+        }))
+    else:
+        # Show all products by default
+        items = list(products_col.find({}))
+
+    return render_template("products.html", products=items, query=query)
+
+@app.route("/search_suggestions")
+def search_suggestions():
+    query = request.args.get("q", "").strip()
+    results = []
+    if query:
+        results = list(products_col.find(
+            {"name": {"$regex": query, "$options": "i"}},
+            {"name": 1, "_id": 0}
+        ).limit(10))
+    return jsonify(results)
 
 @app.route("/add_to_cart/<product_id>")
 def add_to_cart(product_id):

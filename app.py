@@ -11,13 +11,13 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask_mail import Mail, Message
-
+from flask import Flask, render_template, request
+from bson.regex import Regex
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "defaultsecret")
-
 
 app.config.update(
     MAIL_SERVER=os.getenv("MAIL_SERVER"),
@@ -28,16 +28,13 @@ app.config.update(
 )
 
 mail = Mail(app)
-
 # Token serializer
 s = URLSafeTimedSerializer(app.secret_key)
-
 
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
 razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
-
 
 # MongoDB connection
 client = MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017/"))
@@ -52,7 +49,6 @@ crops_col = db["crops"]
 schemes_col = db["schemes"]
 orders_col = db["orders"]
 
-
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -63,7 +59,6 @@ def profile():
         flash("Please log in to view your profile.", "warning")
         return redirect(url_for("login"))
     return render_template("profile.html", name=session.get("name"), email=session.get("user"))
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -88,7 +83,6 @@ def register():
 
     return render_template("register.html")
 
-
 # --- USER LOGIN ---
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -108,7 +102,6 @@ def login():
         flash("Invalid credentials. Try again.", "error")
         return redirect(url_for("login"))
     return render_template("login.html")
-
 
 # --- ADMIN LOGIN ---
 @app.route("/admin-login", methods=["GET", "POST"])
@@ -147,8 +140,6 @@ def admin_dashboard():
 
     return render_template("admin_dashboard.html", orders=orders)
 
-
-
 # --- LOGOUT ---
 @app.route("/logout")
 def logout():
@@ -156,38 +147,24 @@ def logout():
     flash("You have been logged out successfully.", "success")
     return redirect(url_for("login"))
 
-# @app.route("/products")
-# def products():
-#     items = list(products_col.find())
-#     return render_template("products.html", products=items)
 @app.route("/products")
 def products():
-    query = request.args.get("q", "").strip().lower()
-
-    if query:
-        # Search products by name or description (case-insensitive)
-        items = list(products_col.find({
-            "$or": [
-                {"name": {"$regex": query, "$options": "i"}},
-                {"description": {"$regex": query, "$options": "i"}}
-            ]
-        }))
-    else:
-        # Show all products by default
-        items = list(products_col.find({}))
-
+    query = request.args.get("q", "").strip()
+    items = list(products_col.find(
+        {"name": {"$regex": query, "$options": "i"}} if query else {}
+    ))
     return render_template("products.html", products=items, query=query)
 
 @app.route("/search_suggestions")
 def search_suggestions():
-    query = request.args.get("q", "").strip()
-    results = []
-    if query:
-        results = list(products_col.find(
-            {"name": {"$regex": query, "$options": "i"}},
-            {"name": 1, "_id": 0}
-        ).limit(10))
-    return jsonify(results)
+    q = request.args.get("q", "").strip()
+    if not q:
+        return jsonify([])
+    suggestions = list(products_col.find(
+        {"name": {"$regex": q, "$options": "i"}},
+        {"name": 1, "_id": 0}
+    ).limit(8))
+    return jsonify(suggestions)
 
 @app.route("/add_to_cart/<product_id>")
 def add_to_cart(product_id):
@@ -221,9 +198,6 @@ def add_to_cart(product_id):
 
     flash("Product added to cart.", "success")
     return redirect(url_for("view_cart"))
-
-
-
 
 @app.route("/remove-from-cart/<product_id>")
 def remove_from_cart(product_id):
@@ -276,26 +250,37 @@ def view_wishlist():
     products = [products_col.find_one({"_id": ObjectId(item["product_id"])}) for item in wishlist_items]
     return render_template("wishlist.html", products=products)
 
-
 @app.route("/seeds")
 def seeds():
-    items = list(products_col.find({"category": "seeds"}))
-    return render_template("seeds.html", products=items)
+    query = request.args.get("q", "").strip()
+    items = list(products_col.find(
+        {"category": "seeds", "name": {"$regex": query, "$options": "i"}} if query else {"category": "seeds"}
+    ))
+    return render_template("seeds.html", products=items, query=query)
 
 @app.route("/tools")
 def tools():
-    items = list(products_col.find({"category": "tools"}))
-    return render_template("tools.html", products=items)
+    query = request.args.get("q", "").strip()
+    items = list(products_col.find(
+        {"category": "tools", "name": {"$regex": query, "$options": "i"}} if query else {"category": "tools"}
+    ))
+    return render_template("tools.html", products=items, query=query)
 
 @app.route("/pesticides")
 def pesticides():
-    items = list(products_col.find({"category": "pesticides"}))
-    return render_template("pesticides.html", products=items)
+    query = request.args.get("q", "").strip()
+    items = list(products_col.find(
+        {"category": "pesticides", "name": {"$regex": query, "$options": "i"}} if query else {"category": "pesticides"}
+    ))
+    return render_template("pesticides.html", products=items, query=query)
 
 @app.route("/fertilizers")
 def fertilizers():
-    items = list(products_col.find({"category": "fertilizers"}))
-    return render_template("fertilizers.html", products=items)
+    query = request.args.get("q", "").strip()
+    items = list(products_col.find(
+        {"category": "fertilizers", "name": {"$regex": query, "$options": "i"}} if query else {"category": "fertilizers"}
+    ))
+    return render_template("fertilizers.html", products=items, query=query)
 
 @app.route("/cropsdetails")
 def cropsdetails():
@@ -482,8 +467,6 @@ def empty_cart():
     flash("🗑 Your cart has been emptied.", "success")
     return redirect(url_for("checkout"))
 
-
-
 @app.route("/admin/order/<order_id>")
 def view_order_details(order_id):
     if "user" not in session or session.get("role") != "admin":
@@ -524,7 +507,6 @@ def my_orders():
     orders = list(db.orders.find({"user_email": session.get("email")}))
     return render_template("user_orders.html", orders=orders)
 
-
 @app.route("/my-orders/<order_id>")
 def user_order_details(order_id):
     if not session.get("user"):
@@ -537,7 +519,6 @@ def user_order_details(order_id):
         return redirect(url_for("my_orders"))
 
     return render_template("user_order_details.html", order=order)
-
 
 @app.route("/debug_cart")
 def debug_cart():
@@ -571,10 +552,8 @@ def forgot_password():
 
     return render_template("forgot_password.html")
 
-
 # -----------------------------
 # RESET PASSWORD
-# -----------------------------
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
     try:

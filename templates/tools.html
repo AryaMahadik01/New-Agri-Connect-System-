@@ -4,6 +4,25 @@
 
 {% block content %}
 <h2 style="text-align:center; margin-top:1rem;">Tools</h2>
+<!-- 🔍 Modern Product Search Bar -->
+<div class="search-container">
+  <form id="searchForm" method="get" action="{{ url_for('products') }}" class="search-form">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        id="searchInput"
+        name="q"
+        value="{{ query }}"
+        placeholder="Search products..."
+        autocomplete="off"
+      />
+      <div><button type="submit" class="search-btn">Search 🔍</button></div>
+    </div>
+    <!-- 🔽 Suggestion Dropdown -->
+    <div id="suggestions" class="suggestions"></div>
+  </form>
+</div>
 
 <div class="products-container">
   {% for product in products %}
@@ -23,4 +42,40 @@
     </div>
   {% endfor %}
 </div>
+<!-- 🧠 Auto-suggest -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("searchInput");
+  const suggestions = document.getElementById("suggestions");
+
+  input.addEventListener("input", async () => {
+    const q = input.value.trim();
+    if (q.length < 2) {
+      suggestions.style.display = "none";
+      return;
+    }
+
+    const res = await fetch(`/search_suggestions?q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+
+    if (data.length > 0) {
+      suggestions.innerHTML = data
+        .map(p => `<div class="suggest-item" onclick="selectSuggestion('${p.name}')">${p.name}</div>`)
+        .join("");
+      suggestions.style.display = "block";
+    } else {
+      suggestions.style.display = "none";
+    }
+  });
+
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".search-container")) suggestions.style.display = "none";
+  });
+});
+
+function selectSuggestion(name) {
+  document.getElementById("searchInput").value = name;
+  document.getElementById("searchForm").submit();
+}
+</script>
 {% endblock %}

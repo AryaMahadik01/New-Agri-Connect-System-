@@ -53,7 +53,7 @@
   <p style="text-align:center; margin-top:2rem; font-size:1.2rem;">No products found for "{{ query }}".</p>
 {% endif %}
 
-<!-- 🧠 Suggestion Script -->
+<!-- Auto-suggest script -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("searchInput");
@@ -71,12 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (data.length > 0) {
       suggestions.innerHTML = data
-        .map(
-          (p) => `
-          <div class="suggest-item" onclick="selectSuggestion('${p.name}')">
-            ${p.name}
-          </div>`
-        )
+        .map(p => `<div class="suggest-item" onclick="selectSuggestion('${p.name}')">${p.name}</div>`)
         .join("");
       suggestions.style.display = "block";
     } else {
@@ -84,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  document.addEventListener("click", (e) => {
+  document.addEventListener("click", e => {
     if (!e.target.closest(".search-container")) suggestions.style.display = "none";
   });
 });

@@ -26,6 +26,20 @@
           {{ order.shipping_status or 'Pending' }}
         </span>
       </p>
+
+      <!-- 🧭 Shipping Info -->
+      <div class="shipping-info" style="margin-top:1rem; background: linear-gradient(to bottom right, #f0fdf4, #e6f4ea); padding:10px; border-radius:8px;">
+        <h4 style="color:var(--secondary-green); margin-bottom:5px;">🚚 Shipping Details:</h4>
+        {% if order.shipping_info %}
+          <p><strong>Name:</strong> {{ order.shipping_info.full_name }}</p>
+          <p><strong>Phone:</strong> {{ order.shipping_info.phone }}</p>
+          <p><strong>Address:</strong> {{ order.shipping_info.address }}, 
+            {{ order.shipping_info.city }}, {{ order.shipping_info.state }} - {{ order.shipping_info.pincode }}</p>
+        {% else %}
+          <p style="color:#888;">No shipping address provided.</p>
+        {% endif %}
+      </div>
+
       <div class="product-actions" style="margin-top:0.5rem; gap:0.5rem; flex-wrap:wrap;">
         {% if order.shipping_status != 'Delivered' %}
           <a class="btn" style="background: #3498db;" href="{{ url_for('update_shipping', order_id=order._id, status='Shipped') }}">🚚 Mark Shipped</a>

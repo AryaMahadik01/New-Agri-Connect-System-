@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Admin - Manage Offers{% endblock %}
+
+{% block content %}
+<h1 style="text-align:center; margin-top:1rem; color: var(--secondary-green);">
+  🌟 Manage Product Offers
+</h1>
+
+<!-- Add Offer Form -->
+<div style="max-width:600px; margin:2rem auto; background:#f8fff8; padding:1.5rem; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1);">
+  <h3 style="color:var(--primary-green); text-align:center;">➕ Add New Offer</h3>
+  <form method="POST" action="{{ url_for('add_offer') }}" style="display:flex; flex-direction:column; gap:1rem;">
+    <input type="text" name="name" placeholder="Offer Name" required>
+    <textarea name="description" placeholder="Description" required></textarea>
+    <input type="number" name="old_price" placeholder="Old Price" required>
+    <input type="number" name="new_price" placeholder="New Price" required>
+    <input type="text" name="image" placeholder="Image Path (e.g., images/offers/wheat_offer.jpg)" required>
+    <button type="submit" class="btn" style="align-self:center;">Add Offer</button>
+  </form>
+</div>
+
+<!-- Offers List -->
+<h2 style="text-align:center; margin-top:2rem; color:var(--primary-green);">🛒 Current Offers</h2>
+
+<div class="products-container">
+  {% for offer in offers %}
+    <div class="product-card" style="background:#fff; border:2px solid var(--primary-green);">
+      <img src="{{ url_for('static', filename=offer.image) }}" alt="{{ offer.name }}">
+      <h3>{{ offer.name }}</h3>
+      <p>{{ offer.description }}</p>
+      <p><strong>Old Price:</strong> ₹{{ offer.old_price }}</p>
+      <p><strong>New Price:</strong> ₹{{ offer.new_price }}</p>
+      <a href="{{ url_for('delete_offer', offer_id=offer._id) }}" class="btn" style="background:#e74c3c;">🗑 Delete</a>
+    </div>
+  {% else %}
+    <p style="text-align:center; margin-top:2rem; font-size:1.1rem;">No offers available.</p>
+  {% endfor %}
+</div>
+{% endblock %}

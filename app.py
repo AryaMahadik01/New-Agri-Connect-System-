@@ -49,9 +49,9 @@ crops_col = db["crops"]
 schemes_col = db["schemes"]
 orders_col = db["orders"]
 
-@app.route("/")
-def home():
-    return render_template("index.html")
+# @app.route("/")
+# def home():
+#     return render_template("index.html")
 
 @app.route("/profile")
 def profile():
@@ -610,6 +610,57 @@ def send_reset_email(to_email, reset_link):
     except Exception as e:
         print("❌ Failed to send email:", e)
         return False
+
+@app.route("/")
+def home():
+    offers = list(db.offers.find())  # 🧩 Load offers dynamically from MongoDB
+    return render_template("index.html", offers=offers)
+
+@app.route("/admin/offers")
+def admin_offers():
+    if "user" not in session or session.get("role") != "admin":
+        flash("Access denied!", "error")
+        return redirect(url_for("home"))
+
+    offers = list(db.offers.find())
+    return render_template("admin_offers.html", offers=offers)
+
+
+@app.route("/admin/add_offer", methods=["POST"])
+def add_offer():
+    if "user" not in session or session.get("role") != "admin":
+        flash("Access denied!", "error")
+        return redirect(url_for("home"))
+
+    name = request.form["name"]
+    description = request.form["description"]
+    old_price = int(request.form["old_price"])
+    new_price = int(request.form["new_price"])
+    image = request.form["image"]
+
+    db.offers.insert_one({
+        "name": name,
+        "description": description,
+        "old_price": old_price,
+        "new_price": new_price,
+        "image": image,
+        "date_added": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    })
+
+    flash("✅ Offer added successfully!", "success")
+    return redirect(url_for("admin_offers"))
+
+
+@app.route("/admin/delete_offer/<offer_id>")
+def delete_offer(offer_id):
+    if "user" not in session or session.get("role") != "admin":
+        flash("Access denied!", "error")
+        return redirect(url_for("home"))
+
+    db.offers.delete_one({"_id": ObjectId(offer_id)})
+    flash("🗑️ Offer deleted successfully!", "success")
+    return redirect(url_for("admin_offers"))
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

@@ -494,24 +494,126 @@ crops_data = [
         "image": "images/seeds/rice.png"
     },
     {
-        "name": "Wheat",
-        "location": "Punjab, Haryana, UP",
-        "season": "Rabi",
-        "weather": "Cool and dry",
-        "description": "Staple crop of India, grown in winter season.",
-        "image": "images/seeds/wheat.png"
-    },
-    {
-        "name": "Rice",
-        "location": "West Bengal, Bihar, Tamil Nadu",
-        "season": "Kharif",
-        "weather": "Hot and humid",
-        "description": "Major staple crop, requires high water availability.",
-        "image": "images/seeds/rice.png"
-    }
+    "name": "Maize",
+    "location": "Madhya Pradesh, Karnataka, Bihar",
+    "season": "Kharif",
+    "weather": "Warm and moist",
+    "description": "Used for food, fodder, and industrial purposes.",
+    "image": "images/seeds/maize.png"
+},
+{
+    "name": "Barley",
+    "location": "Rajasthan, UP, Haryana",
+    "season": "Rabi",
+    "weather": "Cool and dry",
+    "description": "Important cereal crop used for malt and feed.",
+    "image": "images/seeds/barley.png"
+},
+{
+    "name": "Sugarcane",
+    "location": "Uttar Pradesh, Maharashtra, Karnataka",
+    "season": "Annual",
+    "weather": "Hot and humid",
+    "description": "Major cash crop used in sugar and ethanol production.",
+    "image": "images/seeds/sugarcane.png"
+},
+{
+    "name": "Cotton",
+    "location": "Maharashtra, Gujarat, Telangana",
+    "season": "Kharif",
+    "weather": "Warm and dry",
+    "description": "Primary fiber crop of India, requires moderate rainfall.",
+    "image": "images/seeds/cotton.png"
+},
+{
+    "name": "Soybean",
+    "location": "Madhya Pradesh, Maharashtra, Rajasthan",
+    "season": "Kharif",
+    "weather": "Warm and humid",
+    "description": "Rich in protein and used for oil extraction.",
+    "image": "images/seeds/soybean.png"
+},
+{
+    "name": "Groundnut",
+    "location": "Gujarat, Tamil Nadu, Andhra Pradesh",
+    "season": "Kharif",
+    "weather": "Warm and moderately dry",
+    "description": "Major oilseed crop grown in sandy soils.",
+    "image": "images/seeds/groundnut.png"
+},
+{
+    "name": "Mustard",
+    "location": "Rajasthan, Haryana, MP",
+    "season": "Rabi",
+    "weather": "Cool and dry",
+    "description": "Oilseed crop used for cooking oil and condiments.",
+    "image": "images/seeds/mustard.png"
+},
+{
+    "name": "Bajra",
+    "location": "Rajasthan, Gujarat, Haryana",
+    "season": "Kharif",
+    "weather": "Hot and arid",
+    "description": "Millet crop tolerant to drought conditions.",
+    "image": "images/seeds/bajra.png"
+},
+{
+    "name": "Jowar",
+    "location": "Maharashtra, Karnataka, MP",
+    "season": "Kharif",
+    "weather": "Warm and semi-arid",
+    "description": "Millet crop used for food and fodder.",
+    "image": "images/seeds/jowar.png"
+},
+{
+    "name": "Tea",
+    "location": "Assam, West Bengal, Tamil Nadu",
+    "season": "Annual",
+    "weather": "Humid and cool",
+    "description": "India’s primary beverage crop grown in hill regions.",
+    "image": "images/seeds/tea.png"
+},
+{
+    "name": "Coffee",
+    "location": "Karnataka, Kerala, Tamil Nadu",
+    "season": "Annual",
+    "weather": "Cool and humid",
+    "description": "Commercial beverage crop grown in southern hills.",
+    "image": "images/seeds/coffee.png"
+},
+{
+    "name": "Potato",
+    "location": "UP, West Bengal, Punjab",
+    "season": "Rabi",
+    "weather": "Cool climate",
+    "description": "Popular root vegetable grown widely in India.",
+    "image": "images/seeds/potato.png"
+},
+{
+    "name": "Tomato",
+    "location": "Andhra Pradesh, Karnataka, Maharashtra",
+    "season": "Kharif & Rabi",
+    "weather": "Warm and humid",
+    "description": "Widely cultivated vegetable crop rich in vitamin C.",
+    "image": "images/seeds/tomato.png"
+},
+{
+    "name": "Onion",
+    "location": "Maharashtra, Karnataka, Gujarat",
+    "season": "Rabi & Kharif",
+    "weather": "Mild and dry",
+    "description": "Essential spice crop used across cuisines.",
+    "image": "images/seeds/onion.png"
+},
+{
+    "name": "Banana",
+    "location": "Tamil Nadu, Maharashtra, Kerala",
+    "season": "Annual",
+    "weather": "Hot and humid",
+    "description": "Major fruit crop grown throughout tropical regions.",
+    "image": "images/seeds/banana.png"
+}
 ]
-
-
 db.crops.insert_many(crops_data)
 # -------------------- Government Schemes --------------------
 db.schemes.delete_many({})
@@ -527,15 +629,45 @@ schemes_data = [
         "link": "https://www.nabard.org/"
     },
     {
-        "name": "Pradhan Mantri Fasal Bima Yojana",
-        "description": "Crop insurance scheme for farmers’ protection.",
-        "link": "https://pmfby.gov.in/"
-    },
-    {
-        "name": "Kisan Credit Card",
-        "description": "Provides short-term credit to farmers.",
-        "link": "https://www.nabard.org/"
-    }
+    "name": "Pradhan Mantri Krishi Sinchai Yojana",
+    "description": "Aims at improving irrigation and water efficiency.",
+    "link": "https://pmksy.gov.in/"
+},
+{
+    "name": "Soil Health Card Scheme",
+    "description": "Provides soil nutrient information for better farming decisions.",
+    "link": "https://soilhealth.dac.gov.in/"
+},
+{
+    "name": "Paramparagat Krishi Vikas Yojana",
+    "description": "Promotes organic farming and reduces chemical use.",
+    "link": "https://pgsindia-ncof.gov.in/"
+},
+{
+    "name": "Rashtriya Krishi Vikas Yojana",
+    "description": "Focuses on holistic agricultural growth and innovation.",
+    "link": "https://rkvy.nic.in/"
+},
+{
+    "name": "eNAM - National Agriculture Market",
+    "description": "Online trading platform for agricultural commodities.",
+    "link": "https://enam.gov.in/"
+},
+{
+    "name": "PM Kisan Samman Nidhi",
+    "description": "Provides direct income support to small farmers.",
+    "link": "https://pmkisan.gov.in/"
+},
+{
+    "name": "National Mission on Sustainable Agriculture",
+    "description": "Encourages climate-resilient farming techniques.",
+    "link": "https://nmsa.dac.gov.in/"
+},
+{
+    "name": "PM Formalisation of Micro Food Processing Enterprises Scheme",
+    "description": "Supports small farmers and entrepreneurs in food processing.",
+    "link": "https://mofpi.gov.in/"
+}
 ]
 db.schemes.insert_many(schemes_data)
 
@@ -555,17 +687,36 @@ news_data = [
         "date": "2025-09-10"
     },
     {
-        "title": "Monsoon boosts Kharif sowing",
-        "summary": "Good rainfall improves sowing of rice and pulses this year.",
-        "link": "https://agriculture.gov.in",
-        "date": "2025-09-15"
-    },
-    {
-        "title": "Govt announces subsidy on fertilizers",
-        "summary": "New subsidy rates to support farmers.",
-        "link": "https://pib.gov.in",
-        "date": "2025-09-10"
-    }
+    "title": "New irrigation projects launched in Rajasthan",
+    "summary": "Government announces modern canal systems to improve irrigation.",
+    "link": "https://agriculture.gov.in",
+    "date": "2025-09-25"
+},
+{
+    "title": "Increase in Minimum Support Prices for Rabi crops",
+    "summary": "MSP increased to benefit wheat and mustard farmers.",
+    "link": "https://pib.gov.in",
+    "date": "2025-09-20"
+},
+{
+    "title": "India to export more rice to Southeast Asia",
+    "summary": "Government approves higher export quota for rice exporters.",
+    "link": "https://commerce.gov.in",
+    "date": "2025-09-17"
+},
+{
+    "title": "ICAR develops drought-resistant paddy variety",
+    "summary": "New variety promises stable yield in dry regions.",
+    "link": "https://icar.org.in",
+    "date": "2025-09-14"
+},
+{
+    "title": "Agri drones to be subsidized by Government",
+    "summary": "New scheme offers 50% subsidy on drone purchases.",
+    "link": "https://agricoop.gov.in",
+    "date": "2025-09-12"
+}
+
 ]
 db.news.insert_many(news_data)
 
@@ -583,15 +734,30 @@ knowledge_data = [
         "link": "https://startupindia.gov.in"
     },
     {
-        "title": "Organic Farming Guide",
-        "content": "Learn how to start organic farming and improve soil health.",
-        "link": "https://agricoop.gov.in"
-    },
-    {
-        "title": "Agri-Business Startup Ideas",
-        "content": "Top 10 agribusiness ideas for young entrepreneurs.",
-        "link": "https://startupindia.gov.in"
-    }
+    "title": "Hydroponic Farming Basics",
+    "content": "Understand soilless farming techniques using nutrient-rich water.",
+    "link": "https://agricoop.gov.in"
+},
+{
+    "title": "Smart Irrigation Systems",
+    "content": "Guide to automated irrigation with IoT-based solutions.",
+    "link": "https://icar.org.in"
+},
+{
+    "title": "Drone Use in Agriculture",
+    "content": "Learn how drones can improve precision agriculture and spraying.",
+    "link": "https://pib.gov.in"
+},
+{
+    "title": "Composting Techniques",
+    "content": "Step-by-step guide to making organic compost at home or farm.",
+    "link": "https://ncof.dac.gov.in"
+},
+{
+    "title": "Sustainable Farming Practices",
+    "content": "Improve yield while maintaining ecological balance.",
+    "link": "https://fao.org"
+}
 ]
 db.knowledge.insert_many(knowledge_data)
 

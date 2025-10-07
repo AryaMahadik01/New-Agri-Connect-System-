@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import os
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
@@ -58,7 +59,46 @@ def profile():
     if not session.get("user"):
         flash("Please log in to view your profile.", "warning")
         return redirect(url_for("login"))
-    return render_template("profile.html", name=session.get("name"), email=session.get("user"))
+
+    user = users_col.find_one({"email": session["email"]})
+    return render_template("profile.html", user=user)
+
+UPLOAD_FOLDER = os.path.join("static", "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route("/update_profile", methods=["POST"])
+def update_profile():
+    if not session.get("user"):
+        flash("Please login to update your profile.", "error")
+        return redirect(url_for("login"))
+
+    user_email = session["email"]
+    name = request.form.get("name")
+    phone = request.form.get("phone")
+    address = request.form.get("address")
+
+    update_data = {"name": name, "phone": phone, "address": address}
+
+    # ✅ Handle profile image upload
+    if "profile_pic" in request.files:
+        file = request.files["profile_pic"]
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            file.save(file_path)
+            update_data["profile_pic"] = f"uploads/{filename}"
+
+    users_col.update_one({"email": user_email}, {"$set": update_data})
+    session["name"] = name  # update session instantly
+
+    flash("Profile updated successfully!", "success")
+    return redirect(url_for("profile"))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -661,6 +701,27 @@ def delete_offer(offer_id):
     flash("🗑️ Offer deleted successfully!", "success")
     return redirect(url_for("admin_offers"))
 
+@app.route("/contact", methods=["GET", "POST"])
+def contact():
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        subject = request.form["subject"]
+        message = request.form["message"]
+
+        # ✅ Send email
+        msg = Message(
+            subject=f"📩 New Contact from {name} - {subject}",
+            sender=app.config["MAIL_USERNAME"],
+            recipients=[app.config["MAIL_USERNAME"]],
+        )
+        msg.body = f"From: {name} <{email}>\n\n{message}"
+        mail.send(msg)
+
+        flash("✅ Your message has been sent successfully!", "success")
+        return redirect(url_for("contact"))
+
+    return render_template("contact.html")
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

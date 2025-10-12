@@ -14,6 +14,8 @@ from email.mime.multipart import MIMEMultipart
 from flask_mail import Mail, Message
 from flask import Flask, render_template, request
 from bson.regex import Regex
+import requests
+from flask import jsonify, request
 
 load_dotenv()
 
@@ -418,6 +420,24 @@ def place_order():
         }
 
         db.orders.insert_one(order)
+        # After you have created the `order` dict ...
+        result = db.orders.insert_one(order)
+        order_id = result.inserted_id
+
+# attach _id and date string for invoice generation
+        order["_id"] = order_id
+# optionally ensure 'date' exists
+        order["date"] = order.get("date") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# generate invoice PDF and store its path in DB
+        invoice_path = generate_invoice_pdf(order)
+        db.orders.update_one({"_id": order_id}, {"$set": {"invoice": invoice_path}})
+
+# If COD branch, clear cart and redirect as you already do
+        db.cart.delete_many({"user_email": user_email})
+        flash("Order placed successfully! Invoice generated.", "success")
+        return redirect(url_for("my_orders"))
+
 
         return render_template(
             "razorpay_checkout.html",
@@ -722,6 +742,75 @@ def contact():
         return redirect(url_for("contact"))
 
     return render_template("contact.html")
+
+@app.route("/tutorials")
+def tutorials():
+    tutorials_data = [
+        {
+            "title": "Organic Farming Basics",
+            "video_id": "RXNjGkJe7fY",  # Replace with real YouTube video ID
+            "category": "Organic Farming"
+        },
+        {
+            "title": "Soil Testing Guide",
+            "video_id": "heTxEsrPVdQ",
+            "category": "Soil Health"
+        },
+        {
+            "title": "Efficient Drip Irrigation Setup",
+            "video_id": "3ZJh9fUQ9",
+            "category": "Irrigation"
+        },
+    ]
+    return render_template("tutorials.html", tutorials=tutorials_data)
+
+@app.route("/translate", methods=["POST"])
+def translate_text_api():
+    data = request.get_json()
+    text = data.get("text", "").strip()
+    target_lang = data.get("lang", "hi")
+
+    if not text:
+        return jsonify({"translated": text})
+
+    # ⚡ Prevent English→English (or Marathi→Marathi)
+    if target_lang in ["en", ""]:
+        return jsonify({"translated": text})
+
+    try:
+        # 🔹 Try LibreTranslate first
+        res = requests.post(
+            "https://libretranslate.com/translate",
+            json={"q": text, "source": "en", "target": target_lang},
+            timeout=5
+        )
+        if res.ok:
+            result = res.json()
+            translated = result.get("translatedText", "").strip()
+            if translated and "distinct languages" not in translated.upper():
+                return jsonify({"translated": translated})
+    except Exception as e:
+        print("⚠️ LibreTranslate error:", e)
+
+    try:
+        # 🔹 Fallback: MyMemory API
+        res2 = requests.get(
+            "https://api.mymemory.translated.net/get",
+            params={"q": text, "langpair": f"en|{target_lang}"},
+            timeout=5
+        )
+        data2 = res2.json()
+        translated = data2.get("responseData", {}).get("translatedText", "").strip()
+
+        # ✅ Avoid weird “distinct languages” responses
+        if translated and "distinct languages" not in translated.upper():
+            return jsonify({"translated": translated})
+    except Exception as e:
+        print("⚠️ MyMemory error:", e)
+
+    # Fallback
+    return jsonify({"translated": text})
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

@@ -84,3 +84,64 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 3000);
   }
 });
+
+// 🌍 Safe multilingual translation with fallback + persistence
+document.addEventListener("DOMContentLoaded", () => {
+  const langSelect = document.getElementById("languageSelect");
+  if (!langSelect) return;
+
+  // Remember last selected language
+  const savedLang = localStorage.getItem("preferredLang");
+  if (savedLang) langSelect.value = savedLang;
+
+  langSelect.addEventListener("change", async () => {
+    const lang = langSelect.value;
+    localStorage.setItem("preferredLang", lang);
+
+    const elements = document.querySelectorAll("h1, h2, h3, p, a, button, label, span");
+
+    // ✅ If English selected — restore all original text instantly
+    if (lang === "en") {
+      elements.forEach(el => {
+        if (el.dataset.original) el.innerText = el.dataset.original;
+      });
+      return;
+    }
+
+    // 🌐 Translate every visible text element
+    for (const el of elements) {
+      const original = el.dataset.original || el.innerText.trim();
+      if (!original || original.length < 2) continue;
+
+      // Save original text (only once)
+      if (!el.dataset.original) el.dataset.original = original;
+
+      try {
+        const response = await fetch("/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: original, lang }),
+        });
+        const data = await response.json();
+        const translated = data.translated?.trim();
+
+        // ✅ Use translation only if it's valid
+        if (
+          translated &&
+          translated.length > 1 &&
+          !translated.toUpperCase().includes("PLEASE SELECT TWO DISTINCT LANGUAGES")
+        ) {
+          el.innerText = translated;
+        } else {
+          el.innerText = original;
+        }
+      } catch (err) {
+        console.warn("Translation failed for:", original, err);
+        el.innerText = original;
+      }
+    }
+  });
+});
+
+
+

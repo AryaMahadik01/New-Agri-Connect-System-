@@ -15,7 +15,29 @@
       <a href="{{ url_for('view_cart') }}">Cart</a>
       <a href="{{ url_for('view_wishlist') }}">Wishlist</a>
       <a href="{{ url_for('checkout') }}">Checkout</a>
+      <!-- 🌐 Language Selector -->
+      <!-- <div class="language-selector">
+        <select id="languageSelect">
+          <option value="en">English</option>
+          <option value="hi">हिंदी</option>
+          <option value="mr">मराठी</option>
+          <option value="ta">தமிழ்</option>
+          <option value="te">తెలుగు</option>
+        </select>
+      </div> -->
       <a href="{{ url_for('contact') }}">Contact Us</a>
+      <select id="languageSelect" style="
+          border: 2px solid var(--primary-green);
+          border-radius: 8px;
+          padding: 4px 8px;
+          margin-left: 1rem; ">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="mr">मराठी</option>
+          <option value="ta">தமிழ்</option>
+          <option value="te">తెలుగు</option>
+      </select>
+
 
       {% if session.get('role') == 'admin' %}
         <!-- Admin is logged in -->

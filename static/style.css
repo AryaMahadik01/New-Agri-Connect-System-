@@ -1111,3 +1111,17 @@ form textarea {
   resize: none;
   height: 80px;
 }
+
+.language-selector {
+  display: inline-block;
+  margin-left: 1rem;
+}
+
+.language-selector select {
+  padding: 6px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--primary-green);
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+}

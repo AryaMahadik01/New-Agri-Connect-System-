@@ -1,0 +1,33 @@
+<!-- Add this before </body> in your base template -->
+<div id="chatbot-widget">
+    <div id="chatbot-header">
+        <span>🌱 AgriBot</span>
+        <button id="chatbot-close">×</button>
+    </div>
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-input">
+        <input type="text" id="chatbot-text" placeholder="Ask about crops, orders, schemes...">
+        <button id="chatbot-send">Send</button>
+    </div>
+</div>
+<button id="chatbot-toggle">💬</button>
+
+<!-- Add this to your base.html chatbot section -->
+
+<style>
+.typing-indicator {
+    color: #666;
+    font-style: italic;
+}
+
+.typing-dots {
+    display: inline-block;
+    animation: typing 1.5s infinite;
+}
+
+@keyframes typing {
+    0%, 20% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+</style>

@@ -16,6 +16,8 @@ from flask import Flask, render_template, request
 from bson.regex import Regex
 import requests
 from flask import jsonify, request
+import json
+import re
 
 load_dotenv()
 
@@ -424,21 +426,6 @@ def place_order():
         result = db.orders.insert_one(order)
         order_id = result.inserted_id
 
-# attach _id and date string for invoice generation
-        order["_id"] = order_id
-# optionally ensure 'date' exists
-        order["date"] = order.get("date") or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-# generate invoice PDF and store its path in DB
-        invoice_path = generate_invoice_pdf(order)
-        db.orders.update_one({"_id": order_id}, {"$set": {"invoice": invoice_path}})
-
-# If COD branch, clear cart and redirect as you already do
-        db.cart.delete_many({"user_email": user_email})
-        flash("Order placed successfully! Invoice generated.", "success")
-        return redirect(url_for("my_orders"))
-
-
         return render_template(
             "razorpay_checkout.html",
             razorpay_order=razorpay_order,
@@ -764,53 +751,238 @@ def tutorials():
     ]
     return render_template("tutorials.html", tutorials=tutorials_data)
 
-@app.route("/translate", methods=["POST"])
-def translate_text_api():
-    data = request.get_json()
-    text = data.get("text", "").strip()
-    target_lang = data.get("lang", "hi")
-
-    if not text:
-        return jsonify({"translated": text})
-
-    # ⚡ Prevent English→English (or Marathi→Marathi)
-    if target_lang in ["en", ""]:
-        return jsonify({"translated": text})
-
+# chatbot route 
+@app.route("/chatbot", methods=["POST"])
+def chatbot():
+    user_message = request.json.get("message", "").lower().strip()
+    
     try:
-        # 🔹 Try LibreTranslate first
-        res = requests.post(
-            "https://libretranslate.com/translate",
-            json={"q": text, "source": "en", "target": target_lang},
-            timeout=5
-        )
-        if res.ok:
-            result = res.json()
-            translated = result.get("translatedText", "").strip()
-            if translated and "distinct languages" not in translated.upper():
-                return jsonify({"translated": translated})
+        # Get data from database for intelligent responses
+        products = list(products_col.find({}, {"name": 1, "category": 1, "price": 1}))
+        crops = list(crops_col.find({}, {"name": 1, "season": 1, "location": 1, "description": 1}))
+        schemes = list(schemes_col.find({}, {"name": 1, "description": 1}))
+        
+        # Enhanced rule-based responses with data awareness
+        response = generate_chatbot_response(user_message, products, crops, schemes)
+        
     except Exception as e:
-        print("⚠️ LibreTranslate error:", e)
+        print(f"Chatbot error: {e}")
+        response = "I'm having trouble accessing our database right now. Please try again later."
+    
+    return jsonify({"response": response})
 
-    try:
-        # 🔹 Fallback: MyMemory API
-        res2 = requests.get(
-            "https://api.mymemory.translated.net/get",
-            params={"q": text, "langpair": f"en|{target_lang}"},
-            timeout=5
-        )
-        data2 = res2.json()
-        translated = data2.get("responseData", {}).get("translatedText", "").strip()
+def generate_chatbot_response(user_message, products, crops, schemes):
+    print(f"User asked: {user_message}")  # Debug log
+    
+    # Product-related queries
+    if any(word in user_message for word in ["product", "buy", "shop", "price", "cost", "seed", "fertilizer", "tool", "pesticide"]):
+        return handle_product_query(user_message, products)
+    
+    # Crop-related queries
+    elif any(word in user_message for word in ["crop", "grow", "cultivate", "season", "harvest", "wheat", "rice", "maize"]):
+        return handle_crop_query(user_message, crops)
+    
+    # Scheme-related queries
+    elif any(word in user_message for word in ["scheme", "subsidy", "government", "yojana", "loan", "credit"]):
+        return handle_scheme_query(user_message, schemes)
+    
+    # Order-related queries
+    elif any(word in user_message for word in ["order", "track", "delivery", "shipping", "return", "refund"]):
+        return handle_order_query(user_message)
+    
+    # General farming advice
+    elif any(word in user_message for word in ["fertilizer", "pesticide", "soil", "irrigation", "farming", "advice", "help"]):
+        return handle_farming_advice(user_message)
+    
+    # Greetings and general
+    else:
+        return handle_general_query(user_message)
 
-        # ✅ Avoid weird “distinct languages” responses
-        if translated and "distinct languages" not in translated.upper():
-            return jsonify({"translated": translated})
-    except Exception as e:
-        print("⚠️ MyMemory error:", e)
+def handle_product_query(user_message, products):
+    print(f"Products found: {len(products)}")  # Debug log
+    
+    # Extract categories from products
+    seed_products = [p for p in products if p.get("category") == "seeds"]
+    fertilizer_products = [p for p in products if p.get("category") == "fertilizers"]
+    tool_products = [p for p in products if p.get("category") == "tools"]
+    pesticide_products = [p for p in products if p.get("category") == "pesticides"]
+    
+    # Specific product category queries
+    if "seed" in user_message:
+        if seed_products:
+            sample_seeds = seed_products[:3]
+            seed_names = [s["name"] for s in sample_seeds]
+            seed_list = ", ".join(seed_names)
+            return f"🌱 We have {len(seed_products)} seed varieties! Including: {seed_list}. Check our Seeds section for more options!"
+        else:
+            return "🌱 We have various seeds available! Visit our Products page to browse all seed varieties."
+    
+    elif "fertilizer" in user_message:
+        if fertilizer_products:
+            sample_fert = fertilizer_products[:2]
+            fert_names = [f["name"] for f in sample_fert]
+            fert_list = ", ".join(fert_names)
+            return f"🧪 We offer {len(fertilizer_products)} fertilizers! Such as: {fert_list}. Browse our Fertilizers category!"
+        else:
+            return "🧪 Check our Fertilizers section for various nutrient solutions for your crops!"
+    
+    elif "tool" in user_message:
+        if tool_products:
+            sample_tools = tool_products[:3]
+            tool_names = [t["name"] for t in sample_tools]
+            tool_list = ", ".join(tool_names)
+            return f"🛠️ We have {len(tool_products)} farming tools! Like: {tool_list}. Visit Tools section!"
+        else:
+            return "🛠️ We offer various farming tools and equipment. Check our Tools category!"
+    
+    elif "pesticide" in user_message:
+        if pesticide_products:
+            sample_pest = pesticide_products[:2]
+            pest_names = [p["name"] for p in sample_pest]
+            pest_list = ", ".join(pest_names)
+            return f"🐛 We provide {len(pesticide_products)} pesticides! Including: {pest_list}. Check Pesticides category!"
+        else:
+            return "🐛 We have various pest control solutions. Browse our Pesticides section!"
+    
+    # Price-related queries
+    elif any(word in user_message for word in ["cheap", "affordable", "budget", "low price"]):
+        affordable_products = [p for p in products if p.get("price", 1000) < 500][:3]
+        if affordable_products:
+            affordable_list = ", ".join([f"{p['name']} (₹{p['price']})" for p in affordable_products])
+            return f"💰 Budget-friendly options: {affordable_list}. Use our search to filter by price!"
+        else:
+            return "💰 We have products across different price ranges. Use the search bar to find options within your budget!"
+    
+    # General product query
+    else:
+        total_products = len(products)
+        return f"🛍️ We have {total_products} products across seeds, fertilizers, tools, and pesticides! Use our search bar or browse by category to find what you need."
 
-    # Fallback
-    return jsonify({"translated": text})
+def handle_crop_query(user_message, crops):
+    print(f"Crops found: {len(crops)}")  # Debug log
+    
+    # Season-based recommendations
+    if "rabi" in user_message:
+        rabi_crops = [c for c in crops if c.get("season", "").lower() == "rabi"]
+        if rabi_crops:
+            crop_list = ", ".join([c["name"] for c in rabi_crops[:5]])
+            return f"❄️ Rabi season crops (winter): {crop_list}. These grow in cool, dry conditions from October to March."
+        else:
+            return "❄️ Rabi crops are winter crops like wheat, barley, and mustard. They grow in cool, dry conditions."
+    
+    elif "kharif" in user_message:
+        kharif_crops = [c for c in crops if c.get("season", "").lower() == "kharif"]
+        if kharif_crops:
+            crop_list = ", ".join([c["name"] for c in kharif_crops[:5]])
+            return f"🌧️ Kharif season crops (monsoon): {crop_list}. These need warm, humid conditions from June to September."
+        else:
+            return "🌧️ Kharif crops are monsoon crops like rice, maize, and cotton. They need warm, humid conditions."
+    
+    # Specific crop queries
+    for crop in crops:
+        crop_name_lower = crop["name"].lower()
+        if crop_name_lower in user_message:
+            location = crop.get('location', 'various regions')
+            season = crop.get('season', 'specific season')
+            description = crop.get('description', 'Check our crop details page for more information!')
+            return f"🌾 **{crop['name']}**\n📍 Grown in: {location}\n📅 Season: {season}\n📝 {description}"
+    
+    # General crop advice
+    if crops:
+        sample_crops = ", ".join([c["name"] for c in crops[:4]])
+        return f"🌱 We have information on {len(crops)} crops! Including: {sample_crops}. Visit 'Crop Details' page for complete growing guides!"
+    else:
+        return "🌱 Check our 'Crop Details' section for information on various crops and their growing conditions!"
 
+def handle_scheme_query(user_message, schemes):
+    print(f"Schemes found: {len(schemes)}")  # Debug log
+    
+    # Specific scheme mentions
+    for scheme in schemes:
+        scheme_name_lower = scheme["name"].lower()
+        # Check if any significant word from scheme name is in user message
+        scheme_words = scheme_name_lower.split()
+        if any(word in user_message for word in scheme_words if len(word) > 4):
+            return f"🏛️ **{scheme['name']}**\n📋 {scheme['description']}\n🔗 Visit our Government Schemes page for application details and eligibility!"
+    
+    # Loan/Credit queries
+    if any(word in user_message for word in ["loan", "credit", "kisan card"]):
+        credit_schemes = [s for s in schemes if any(word in s["name"].lower() for word in ["credit", "kisan", "samman"])]
+        if credit_schemes:
+            scheme_list = ", ".join([s["name"] for s in credit_schemes])
+            return f"💳 Financial support schemes: {scheme_list}. These provide credit and income support to farmers. Check Government Schemes page for details!"
+    
+    # Insurance queries
+    if "insurance" in user_message or "fasal bima" in user_message:
+        insurance_schemes = [s for s in schemes if "bima" in s["name"].lower() or "insurance" in s["name"].lower()]
+        if insurance_schemes:
+            scheme_info = "\n".join([f"• {s['name']}: {s['description']}" for s in insurance_schemes])
+            return f"🛡️ Crop insurance schemes:\n{scheme_info}"
+    
+    # General scheme information
+    if schemes:
+        sample_schemes = ", ".join([s["name"] for s in schemes[:3]])
+        return f"📜 We list {len(schemes)} government schemes! Including: {sample_schemes}. Check 'Government Schemes' page for complete list with eligibility criteria!"
+    else:
+        return "📜 Visit our Government Schemes page for information on various farmer support programs and subsidies!"
+
+def handle_order_query(user_message):
+    if "track" in user_message:
+        return "📦 To track your order, go to 'My Orders' section in your profile. You'll see current status and shipping updates there!"
+    elif "delivery" in user_message or "shipping" in user_message:
+        return "🚚 Delivery usually takes 3-7 days depending on your location. Shipping status updates are available in 'My Orders'. Contact support for urgent queries!"
+    elif "return" in user_message or "refund" in user_message:
+        return "🔄 For returns/refunds, please contact our support team with your order details at support@agriconnect.in or call +91 98765 43210"
+    elif "status" in user_message:
+        return "📋 You can check your order status in 'My Orders' section. Need help with a specific order? Contact our support team!"
+    else:
+        return "📦 For order-related queries, visit 'My Orders' section or contact our support team. We're here to help!"
+
+def handle_farming_advice(user_message):
+    if "fertilizer" in user_message:
+        return "🧪 Choose fertilizers based on your soil type and crop needs. We offer organic and chemical options. Consider soil testing for best results! Check our Fertilizers section."
+    elif "pesticide" in user_message:
+        return "🐛 Select pesticides based on the specific pest and crop. Always follow usage instructions. We have various options in Pesticides category. Consult an agricultural expert for severe infestations."
+    elif "soil" in user_message:
+        return "🌱 Soil health is crucial! Consider getting a Soil Health Card from government schemes. We offer soil testing kits and appropriate fertilizers in our store."
+    elif "irrigation" in user_message or "water" in user_message:
+        return "💧 Efficient irrigation saves water and improves yield. We offer drip irrigation systems and water pumps in Tools section. Consider rainwater harvesting for sustainable farming!"
+    elif "organic" in user_message:
+        return "🌿 Organic farming improves soil health and produces chemical-free crops. We offer organic manure and natural pest control solutions. Check our Knowledge Hub for organic farming guides!"
+    else:
+        return "🌾 For detailed farming advice, visit our Knowledge Hub with articles on organic farming, irrigation, pest control, and sustainable practices!"
+
+def handle_general_query(user_message):
+    # Greetings
+    if any(word in user_message for word in ["hi", "hello", "hey", "hola", "namaste"]):
+        return "Hello! 👋 I'm AgriBot, your farming assistant. I can help with:\n• Product recommendations\n• Crop growing advice\n• Government schemes\n• Order tracking\n• Farming tips\nHow can I assist you today?"
+    
+    elif any(word in user_message for word in ["bye", "exit", "quit", "goodbye"]):
+        return "Goodbye! 👋 Happy farming! Visit again if you need help with your agricultural needs."
+    
+    elif any(word in user_message for word in ["thank", "thanks"]):
+        return "You're welcome! 😊 Is there anything else I can help you with today?"
+    
+    elif any(word in user_message for word in ["what can you do", "help", "features"]):
+        return "I can help you with:\n🛍️ Product information and recommendations\n🌾 Crop growing advice and seasons\n🏛️ Government scheme details\n📦 Order tracking and support\n🌱 Farming tips and best practices\nWhat would you like to know?"
+    
+    # Default response
+    return "I'm here to help with farming products, crop advice, government schemes, and orders! You can ask me about:\n• Available seeds/fertilizers/tools\n• Crop growing seasons\n• Government subsidies\n• Order status\n• Farming best practices"
+# Add this route to test if data is loading correctly
+@app.route("/chatbot-debug")
+def chatbot_debug():
+    products = list(products_col.find({}, {"name": 1, "category": 1, "price": 1}))
+    crops = list(crops_col.find({}, {"name": 1, "season": 1, "location": 1}))
+    schemes = list(schemes_col.find({}, {"name": 1, "description": 1}))
+    
+    return jsonify({
+        "products_count": len(products),
+        "crops_count": len(crops), 
+        "schemes_count": len(schemes),
+        "sample_products": products[:2],
+        "sample_crops": crops[:2],
+        "sample_schemes": schemes[:2]
+    })
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

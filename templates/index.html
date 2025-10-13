@@ -27,23 +27,26 @@
 </section>
 
 <!-- 🌾 Exclusive Offers Section -->
+<!-- 🌾 Dynamic Special Offers -->
 <section class="offers-section">
   <h2 class="section-title">🌟 Special Offers & Sales</h2>
+
   <div class="offers-container">
     {% for offer in offers %}
-      <div class="offer-card">
-        <img src="{{ url_for('static', filename=offer.image) }}" alt="{{ offer.name }}">
-        <h3>{{ offer.name }}</h3>
-        <p>{{ offer.description }}</p>
-        <p class="offer-price">
-          <span class="old-price">₹{{ offer.old_price }}</span>
-          <span class="new-price">₹{{ offer.new_price }}</span>
-        </p>
-        <button class="btn">Shop Now</button>
-      </div>
+    <div class="offer-card">
+      <img src="{{ url_for('static', filename=offer.image) }}" alt="{{ offer.name }}">
+      <h3>{{ offer.name }}</h3>
+      <p>{{ offer.description }}</p>
+      <p>
+        <span class="old-price">₹{{ offer.old_price }}</span>
+        <span class="new-price">₹{{ offer.new_price }}</span>
+      </p>
+      <a href="{{ url_for('products') }}?q={{ offer.query }}" class="btn">Shop Now</a>
+    </div>
     {% endfor %}
   </div>
 </section>
+
 
 <section class="categories">
   <h2>Explore More</h2>

@@ -735,18 +735,33 @@ def tutorials():
     tutorials_data = [
         {
             "title": "Organic Farming Basics",
-            "video_id": "RXNjGkJe7fY",  # Replace with real YouTube video ID
+            "video_id": "lRyXlvIJFWI",  # Replace with real YouTube video ID
             "category": "Organic Farming"
         },
         {
             "title": "Soil Testing Guide",
-            "video_id": "heTxEsrPVdQ",
+            "video_id": "L6EtmGMJflI",
             "category": "Soil Health"
         },
         {
             "title": "Efficient Drip Irrigation Setup",
-            "video_id": "3ZJh9fUQ9",
+            "video_id": "HEyFQo9RUWQ",
             "category": "Irrigation"
+        },
+        {
+            "title": "Fully Automated Greenhouse Farm",
+            "video_id": "OOb7q7YcxiI",
+            "category": "Farming"
+        },
+        {
+            "title": "Vegetable Gardening at Home",
+            "video_id": "5-59g0K2x6Y",
+            "category": "Farming"
+        },
+        {
+            "title": "How to Prepare Soil for Farming",
+            "video_id": "yN76_3-bj6s",
+            "category": "Soil Health"
         },
     ]
     return render_template("tutorials.html", tutorials=tutorials_data)

@@ -999,5 +999,63 @@ def chatbot_debug():
         "sample_schemes": schemes[:2]
     })
 
+@app.route("/admin/analytics")
+def admin_analytics():
+    if "user" not in session or session.get("role") != "admin":
+        flash("Access denied!", "error")
+        return redirect(url_for("home"))
+
+    # Fetch orders and users
+    orders = list(db.orders.find())
+    users = list(db.users.find())
+
+    # ✅ Summary stats
+    total_sales = sum(order.get("grandtotal", 0) for order in orders)
+    total_orders = len(orders)
+    total_users = len(users)
+
+    # ✅ Monthly Sales
+    monthly_sales = {}
+    for order in orders:
+        date = order.get("date", "")[:7]  # YYYY-MM
+        monthly_sales[date] = monthly_sales.get(date, 0) + order.get("grandtotal", 0)
+
+    labels = sorted(monthly_sales.keys())
+    sales_data = [monthly_sales[m] for m in labels]
+
+    # ✅ Top 5 Products
+    product_sales = {}
+    for order in orders:
+        for item in order.get("items", []):
+            name = item.get("name", "Unknown")
+            product_sales[name] = product_sales.get(name, 0) + (item.get("price", 0) * item.get("quantity", 0))
+
+    top_products = sorted(product_sales.items(), key=lambda x: x[1], reverse=True)[:5]
+
+    # ✅ Payment Method Distribution
+    payment_counts = {"cod": 0, "upi": 0, "card": 0, "other": 0}
+    for order in orders:
+        method = order.get("payment_method", "other").lower()
+        if method in payment_counts:
+            payment_counts[method] += 1
+        else:
+            payment_counts["other"] += 1
+
+    payment_labels = list(payment_counts.keys())
+    payment_data = list(payment_counts.values())
+
+    return render_template(
+        "admin_analytics.html",
+        total_sales=total_sales,
+        total_orders=total_orders,
+        total_users=total_users,
+        labels=labels,
+        sales_data=sales_data,
+        top_products=top_products,
+        payment_labels=payment_labels,
+        payment_data=payment_data,
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

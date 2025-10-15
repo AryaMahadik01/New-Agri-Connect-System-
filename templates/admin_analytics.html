@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}Admin Analytics - AgriConnect{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+  <h1 class="dashboard-title">📊 Admin Analytics Dashboard</h1>
+
+  <!-- 🧾 Summary Cards -->
+  <div class="analytics-summary">
+    <div class="card">
+      <h2>💰 ₹{{ total_sales }}</h2>
+      <p>Total Revenue</p>
+    </div>
+    <div class="card">
+      <h2>{{ total_orders }}</h2>
+      <p>Total Orders</p>
+    </div>
+    <div class="card">
+      <h2>{{ total_users }}</h2>
+      <p>Registered Users</p>
+    </div>
+  </div>
+
+  <!-- 📈 Charts -->
+  <div class="chart-section">
+    <div class="chart-card">
+      <h3>📅 Monthly Sales Trend</h3>
+      <canvas id="salesChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>🏆 Top 5 Products</h3>
+      <canvas id="topProductsChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>💳 Orders by Payment Method</h3>
+      <canvas id="paymentChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- 📊 Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+/* 📅 Monthly Sales Trend */
+new Chart(document.getElementById("salesChart"), {
+  type: "line",
+  data: {
+    labels: {{ labels|tojson }},
+    datasets: [{
+      label: "Monthly Sales (₹)",
+      data: {{ sales_data|tojson }},
+      borderColor: "#27ae60",
+      backgroundColor: "rgba(46, 204, 113, 0.2)",
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    scales: { y: { beginAtZero: true } }
+  }
+});
+
+/* 🏆 Top Products */
+new Chart(document.getElementById("topProductsChart"), {
+  type: "bar",
+  data: {
+    labels: {{ top_products|map(attribute=0)|list|tojson }},
+    datasets: [{
+      label: "Revenue (₹)",
+      data: {{ top_products|map(attribute=1)|list|tojson }},
+      backgroundColor: ["#16a085","#27ae60","#2ecc71","#1abc9c","#48c9b0"]
+    }]
+  },
+  options: { scales: { y: { beginAtZero: true } } }
+});
+
+/* 💳 Payment Method Chart */
+new Chart(document.getElementById("paymentChart"), {
+  type: "doughnut",
+  data: {
+    labels: {{ payment_labels|tojson }},
+    datasets: [{
+      data: {{ payment_data|tojson }},
+      backgroundColor: ["#f39c12","#3498db","#9b59b6","#95a5a6"],
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    plugins: {
+      legend: { position: "bottom" }
+    }
+  }
+});
+</script>
+
+<style>
+.analytics-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.dashboard-title {
+  text-align: center;
+  color: var(--primary-green);
+  margin-bottom: 2rem;
+}
+
+.analytics-summary {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.card {
+  background: #f9fff9;
+  border: 2px solid var(--primary-green);
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  text-align: center;
+  width: 250px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+  color: var(--secondary-green);
+  font-size: 2rem;
+}
+
+.chart-section {
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.chart-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e1e1e1;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+</style>
+{% endblock %}

@@ -4,7 +4,7 @@
 
 {% block content %}
 <h2 style="text-align:center; margin-top:1rem;">Fertilizers</h2>
-<!-- 🔍 Modern Product Search Bar -->
+<!--  Modern Product Search Bar -->
 <div class="search-container">
   <form id="searchForm" method="get" action="{{ url_for('products') }}" class="search-form">
     <div class="search-bar">
@@ -19,7 +19,7 @@
       />
       <div><button type="submit" class="search-btn">Search 🔍</button></div>
     </div>
-    <!-- 🔽 Suggestion Dropdown -->
+    <!-- Suggestion Dropdown -->
     <div id="suggestions" class="suggestions"></div>
   </form>
 </div>
@@ -42,7 +42,7 @@
     </div>
   {% endfor %}
 </div>
-<!-- 🧠 Auto-suggest -->
+<!-- Auto-suggest -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("searchInput");

@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}AgriConnect{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/container-query-polyfill@1.0.2/dist/container-query-polyfill.min.js"></script>
@@ -14,7 +15,7 @@
   <!-- Navbar -->
   {% include 'navbar.html' %}
 
-  <!-- 🌟 Toast Notifications -->
+  <!--  Toast Notifications -->
   <div id="toast-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -37,7 +38,7 @@
   <footer class="footer">
   <div class="footer-container">
 
-    <!-- 🌿 About Section -->
+    <!--  About Section -->
     <div class="footer-col">
       <h3>About AgriConnect</h3>
       <p>
@@ -48,7 +49,7 @@
       </p>
     </div>
 
-    <!-- 🔗 Quick Links -->
+    <!--  Quick Links -->
     <div class="footer-col">
       <h3>Quick Links</h3>
       <ul>
@@ -164,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 
-    <!-- 📞 Contact Info -->
+    <!--  Contact Info -->
     <div class="footer-col">
       <h3>Contact Us</h3>
       <p><strong>📍 Address:</strong> Pune, Maharashtra, India</p>
@@ -173,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <p><strong>🕒 Hours:</strong> Mon–Sat: 9am–7pm</p>
     </div>
 
-    <!-- 🌍 Social Media -->
+    <!--  Social Media -->
     <div class="footer-col">
       <h3>Follow Us</h3>
       <div class="social-links">

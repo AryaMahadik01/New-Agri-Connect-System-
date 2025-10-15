@@ -43,7 +43,7 @@ razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 # MongoDB connection
 client = MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017/"))
-db = client["agri_connect"]  # ✅ unified DB name
+db = client["agri_connect"]  
 users_col = db["users"]
 products_col = db["products"]
 cart_col = db["cart"]
@@ -54,9 +54,6 @@ crops_col = db["crops"]
 schemes_col = db["schemes"]
 orders_col = db["orders"]
 
-# @app.route("/")
-# def home():
-#     return render_template("index.html")
 
 @app.route("/profile")
 def profile():
@@ -89,7 +86,7 @@ def update_profile():
 
     update_data = {"name": name, "phone": phone, "address": address}
 
-    # ✅ Handle profile image upload
+    # Handle profile image upload
     if "profile_pic" in request.files:
         file = request.files["profile_pic"]
         if file and allowed_file(file.filename):
@@ -385,12 +382,12 @@ def place_order():
         flash("Your cart is empty!", "error")
         return redirect(url_for("view_cart"))
 
-    # 🧮 Calculate totals
+    #  Calculate totals
     subtotal = sum(item["price"] * item["quantity"] for item in cart_items)
     tax = round(0.05 * subtotal, 2)
     grand_total = subtotal + tax
 
-    # 🚚 Shipping Info
+    #  Shipping Info
     shipping_info = {
         "full_name": request.form.get("full_name"),
         "phone": request.form.get("phone"),
@@ -401,7 +398,7 @@ def place_order():
     }
 
     if payment_method in ["upi", "card"]:
-        # ✅ Razorpay order creation
+        #  Razorpay order creation
         razorpay_order = razorpay_client.order.create({
             "amount": int(grand_total * 100),
             "currency": "INR",
@@ -436,7 +433,7 @@ def place_order():
         )
 
     else:
-        # ✅ COD flow
+        #  COD flow
         order = {
             "user_email": user_email,
             "user": session.get("name"),
@@ -599,7 +596,6 @@ def forgot_password():
 
     return render_template("forgot_password.html")
 
-# -----------------------------
 # RESET PASSWORD
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
@@ -660,7 +656,7 @@ def send_reset_email(to_email, reset_link):
 
 @app.route("/")
 def home():
-    offers = list(db.offers.find())  # 🧩 Load offers dynamically from MongoDB
+    offers = list(db.offers.find())
     return render_template("index.html", offers=offers)
 
 @app.route("/admin/offers")
@@ -1009,12 +1005,12 @@ def admin_analytics():
     orders = list(db.orders.find())
     users = list(db.users.find())
 
-    # ✅ Summary stats
+    #  Summary stats
     total_sales = sum(order.get("grandtotal", 0) for order in orders)
     total_orders = len(orders)
     total_users = len(users)
 
-    # ✅ Monthly Sales
+    #  Monthly Sales
     monthly_sales = {}
     for order in orders:
         date = order.get("date", "")[:7]  # YYYY-MM
@@ -1023,7 +1019,7 @@ def admin_analytics():
     labels = sorted(monthly_sales.keys())
     sales_data = [monthly_sales[m] for m in labels]
 
-    # ✅ Top 5 Products
+    #  Top 5 Products
     product_sales = {}
     for order in orders:
         for item in order.get("items", []):
@@ -1032,7 +1028,7 @@ def admin_analytics():
 
     top_products = sorted(product_sales.items(), key=lambda x: x[1], reverse=True)[:5]
 
-    # ✅ Payment Method Distribution
+    #  Payment Method Distribution
     payment_counts = {"cod": 0, "upi": 0, "card": 0, "other": 0}
     for order in orders:
         method = order.get("payment_method", "other").lower()

@@ -20,14 +20,14 @@
       <p><strong>Payment:</strong> {{ order.payment_method | upper }}</p>
       <p><strong>Grand Total:</strong> ₹{{ order.grandtotal }}</p>
 
-      <!-- 🚚 Shipping Status -->
+      <!--  Shipping Status -->
       <p><strong>Shipping Status:</strong> 
         <span style="color: {{ '#f39c12' if order.shipping_status == 'Pending' else '#3498db' if order.shipping_status == 'Shipped' else '#2ecc71' }}; font-weight:bold;">
           {{ order.shipping_status or 'Pending' }}
         </span>
       </p>
 
-      <!-- 🧭 Shipping Info -->
+      <!--  Shipping Info -->
       <div class="shipping-info" style="margin-top:1rem; background: linear-gradient(to bottom right, #f0fdf4, #e6f4ea); padding:10px; border-radius:8px;">
         <h4 style="color:var(--secondary-green); margin-bottom:5px;">🚚 Shipping Details:</h4>
         {% if order.shipping_info %}

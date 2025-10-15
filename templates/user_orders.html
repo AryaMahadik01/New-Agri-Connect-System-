@@ -8,19 +8,19 @@
   {% for order in orders %}
     <div class="product-card" style="margin-bottom:1.5rem; padding:1.5rem; border:2px solid var(--primary-green); border-radius:12px; background:#f9fff9;">
       
-      <!-- 🧾 Order Info -->
+      <!--  Order Info -->
       <h3>Order Date: {{ order.date }}</h3>
       <p><strong>Payment:</strong> {{ order.payment_method|upper }}</p>
       <p><strong>Total:</strong> ₹{{ order.grandtotal }}</p>
 
-      <!-- 🚚 Shipping Tracker -->
+      <!--  Shipping Tracker -->
       <div class="status-tracker">
         <div class="step {% if order.shipping_status in ['Pending','Shipped','Delivered'] %}active{% endif %}">Pending</div>
         <div class="step {% if order.shipping_status in ['Shipped','Delivered'] %}active{% endif %}">Shipped</div>
         <div class="step {% if order.shipping_status == 'Delivered' %}active{% endif %}">Delivered</div>
       </div>
 
-      <!-- 📦 Shipping Info -->
+      <!--  Shipping Info -->
       {% if order.shipping_info %}
       <div class="shipping-box" style="margin-top:1rem; padding:1rem; background:#f0fff4; border-radius:8px;">
         <h4 style="color: var(--secondary-green); margin-bottom:5px;">📦 Shipping Address:</h4>
@@ -44,7 +44,7 @@
           {% endfor %}
         </ul>
       </div>
-      <!-- 🔍 View Details -->
+      <!--  View Details -->
       <div style="margin-top:1rem; text-align:right;">
         <a href="{{ url_for('user_order_details', order_id=order._id) }}" class="btn">View Details</a>
       </div>
@@ -55,7 +55,7 @@
   {% endfor %}
 </div>
 
-<!-- 🔹 CSS -->
+<!--  CSS -->
 <style>
 .status-tracker {
   display: flex;

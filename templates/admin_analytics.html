@@ -5,7 +5,7 @@
 <div class="analytics-container">
   <h1 class="dashboard-title">📊 Admin Analytics Dashboard</h1>
 
-  <!-- 🧾 Summary Cards -->
+  <!--  Summary Cards -->
   <div class="analytics-summary">
     <div class="card">
       <h2>💰 ₹{{ total_sales }}</h2>
@@ -21,7 +21,7 @@
     </div>
   </div>
 
-  <!-- 📈 Charts -->
+  <!--  Charts -->
   <div class="chart-section">
     <div class="chart-card">
       <h3>📅 Monthly Sales Trend</h3>
@@ -40,10 +40,10 @@
   </div>
 </div>
 
-<!-- 📊 Chart.js -->
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-/* 📅 Monthly Sales Trend */
+/* Monthly Sales Trend */
 new Chart(document.getElementById("salesChart"), {
   type: "line",
   data: {
@@ -62,7 +62,7 @@ new Chart(document.getElementById("salesChart"), {
   }
 });
 
-/* 🏆 Top Products */
+/*  Top Products */
 new Chart(document.getElementById("topProductsChart"), {
   type: "bar",
   data: {
@@ -76,7 +76,7 @@ new Chart(document.getElementById("topProductsChart"), {
   options: { scales: { y: { beginAtZero: true } } }
 });
 
-/* 💳 Payment Method Chart */
+/* Payment Method Chart */
 new Chart(document.getElementById("paymentChart"), {
   type: "doughnut",
   data: {

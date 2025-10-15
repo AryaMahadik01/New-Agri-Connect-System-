@@ -483,7 +483,7 @@ crops_data = [
         "season": "Rabi",
         "weather": "Cool and dry",
         "description": "Staple crop of India, grown in winter season.",
-        "image": "images/seeds/wheat.png"
+        "image": "images/crops/wheat.jpg"
     },
     {
         "name": "Rice",
@@ -491,7 +491,7 @@ crops_data = [
         "season": "Kharif",
         "weather": "Hot and humid",
         "description": "Major staple crop, requires high water availability.",
-        "image": "images/seeds/rice.png"
+        "image": "images/crops/rice.jpg"
     },
     {
     "name": "Maize",
@@ -499,7 +499,7 @@ crops_data = [
     "season": "Kharif",
     "weather": "Warm and moist",
     "description": "Used for food, fodder, and industrial purposes.",
-    "image": "images/seeds/maize.png"
+    "image": "images/crops/maize.jpg"
 },
 {
     "name": "Barley",
@@ -507,7 +507,7 @@ crops_data = [
     "season": "Rabi",
     "weather": "Cool and dry",
     "description": "Important cereal crop used for malt and feed.",
-    "image": "images/seeds/barley.png"
+    "image": "images/crops/barley.jpg"
 },
 {
     "name": "Sugarcane",
@@ -515,7 +515,7 @@ crops_data = [
     "season": "Annual",
     "weather": "Hot and humid",
     "description": "Major cash crop used in sugar and ethanol production.",
-    "image": "images/seeds/sugarcane.png"
+    "image": "images/crops/sugarcane.jpg"
 },
 {
     "name": "Cotton",
@@ -523,7 +523,7 @@ crops_data = [
     "season": "Kharif",
     "weather": "Warm and dry",
     "description": "Primary fiber crop of India, requires moderate rainfall.",
-    "image": "images/seeds/cotton.png"
+    "image": "images/crops/cotton.jpg"
 },
 {
     "name": "Soybean",
@@ -531,7 +531,7 @@ crops_data = [
     "season": "Kharif",
     "weather": "Warm and humid",
     "description": "Rich in protein and used for oil extraction.",
-    "image": "images/seeds/soybean.png"
+    "image": "images/crops/soybean.jpg"
 },
 {
     "name": "Groundnut",
@@ -539,7 +539,7 @@ crops_data = [
     "season": "Kharif",
     "weather": "Warm and moderately dry",
     "description": "Major oilseed crop grown in sandy soils.",
-    "image": "images/seeds/groundnut.png"
+    "image": "images/crops/groundnut.jpg"
 },
 {
     "name": "Mustard",
@@ -547,7 +547,7 @@ crops_data = [
     "season": "Rabi",
     "weather": "Cool and dry",
     "description": "Oilseed crop used for cooking oil and condiments.",
-    "image": "images/seeds/mustard.png"
+    "image": "images/crops/mustard.jpg"
 },
 {
     "name": "Bajra",
@@ -555,7 +555,7 @@ crops_data = [
     "season": "Kharif",
     "weather": "Hot and arid",
     "description": "Millet crop tolerant to drought conditions.",
-    "image": "images/seeds/bajra.png"
+    "image": "images/crops/bajra.jpg"
 },
 {
     "name": "Jowar",
@@ -563,7 +563,7 @@ crops_data = [
     "season": "Kharif",
     "weather": "Warm and semi-arid",
     "description": "Millet crop used for food and fodder.",
-    "image": "images/seeds/jowar.png"
+    "image": "images/crops/jowar.png"
 },
 {
     "name": "Tea",
@@ -571,7 +571,7 @@ crops_data = [
     "season": "Annual",
     "weather": "Humid and cool",
     "description": "India’s primary beverage crop grown in hill regions.",
-    "image": "images/seeds/tea.png"
+    "image": "images/crops/tea.jpg"
 },
 {
     "name": "Coffee",
@@ -579,7 +579,7 @@ crops_data = [
     "season": "Annual",
     "weather": "Cool and humid",
     "description": "Commercial beverage crop grown in southern hills.",
-    "image": "images/seeds/coffee.png"
+    "image": "images/crops/coffee.jpg"
 },
 {
     "name": "Potato",
@@ -587,7 +587,7 @@ crops_data = [
     "season": "Rabi",
     "weather": "Cool climate",
     "description": "Popular root vegetable grown widely in India.",
-    "image": "images/seeds/potato.png"
+    "image": "images/crops/potato.jpg"
 },
 {
     "name": "Tomato",
@@ -595,7 +595,7 @@ crops_data = [
     "season": "Kharif & Rabi",
     "weather": "Warm and humid",
     "description": "Widely cultivated vegetable crop rich in vitamin C.",
-    "image": "images/seeds/tomato.png"
+    "image": "images/crops/tomato.jpg"
 },
 {
     "name": "Onion",
@@ -603,7 +603,7 @@ crops_data = [
     "season": "Rabi & Kharif",
     "weather": "Mild and dry",
     "description": "Essential spice crop used across cuisines.",
-    "image": "images/seeds/onion.png"
+    "image": "images/crops/onion.jpg"
 },
 {
     "name": "Banana",
@@ -611,7 +611,7 @@ crops_data = [
     "season": "Annual",
     "weather": "Hot and humid",
     "description": "Major fruit crop grown throughout tropical regions.",
-    "image": "images/seeds/banana.png"
+    "image": "images/crops/banana.jpg"
 }
 ]
 db.crops.insert_many(crops_data)

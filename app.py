@@ -418,7 +418,7 @@ def place_order():
             "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
-        db.orders.insert_one(order)
+        
         # After you have created the `order` dict ...
         result = db.orders.insert_one(order)
         order_id = result.inserted_id
